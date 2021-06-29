@@ -66,7 +66,8 @@ Pretendemos utilizar as seguintes tecnologias:
 
 OBS: Não representam a versão final.
 
-* Front-end: JS, CSS, e HTML puro.
+* Front-end: **React**.
+* Backend: Node JS, Express, Typescript.
 
 ## **Inicializando**
 
