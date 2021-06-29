@@ -59,3 +59,15 @@ OBS: Não representam a versão final.
   * Data de criação
   * Data de atualização
   * Duração (Data de término)
+
+## **Tecnologias**
+
+Pretendemos utilizar as seguintes tecnologias:
+
+OBS: Não representam a versão final.
+
+* Front-end: JS, CSS, e HTML puro.
+
+## **Inicializando**
+
+!TODO
