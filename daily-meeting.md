@@ -1,3 +1,12 @@
+## Daniel - 06.07.2021
+
+Não fiz nada até o momento.
+
+Hoje pontuaremos as tarefas menores e distribuiremos para os integrantes do grupo.
+Distribuímos as tarefas e fiquei responsável pela **tarefa #13**.
+
+Minhas possíveis dificuldades pode ser em relação a design, porém eu decidi fazer protótipos utilizando o bootstrap como gerenciador principal de UI.
+
 ## Daniel - 02.07.2021
 
 Fiz alguns experimentos de criação de interface para entender o posicionamento dos elementos.
