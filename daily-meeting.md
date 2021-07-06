@@ -1,3 +1,11 @@
+## Daniel - 02.07.2021
+
+Fiz alguns experimentos de criação de interface para entender o posicionamento dos elementos.
+
+Hoje as tarefas gerais foram quebradas em tarefas menores para poder distribuí-las para o grupo.
+Também fiz alguumas atualizações nas ideias do projeto.
+
+Como não existe nada concreto ainda, tive dificuldade em fazer as descrições das tarefas menores.
 
 ## Daniel - 29.06.2021
 
