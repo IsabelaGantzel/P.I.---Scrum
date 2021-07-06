@@ -34,22 +34,24 @@ Possível estruturas dos modelos necessário.
 
 OBS: Não representam a versão final.
 
+**Cliente**: ...
+
 **Backlog do produto/sprint**: Lista de tarefas, com características e funcionalidades que o sistema deve implementar.
 * Quais atributos um item do backlog precisa ter?
   * Data de criação
   * Data de atualização
+  * Labels              (“Bug” | “Feature” | "Design")
   * Descrição
-  * Pontuação
-  * Fase do Pipeline (“Started” | “Doing” | “Testing” | “Reviewing” | “Done”)
+  * Pontuação           (Estimativa de esforço)
+  * Fase do Pipeline    (“Started” | “Doing” | “Testing” | “Reviewing” | “Done”)
   * Id da Sprint: Nullable
 
 **História do usuário**:
 * Quais os atributos de uma história do usuário?
   * Título
   * Descrição
-  * Labels
-  * Id da Sprint
-  * Estimativa de esforço
+  * Pontuação (Estimativa de esforço)
+  * Id da Sprint: Nullable
 
 **Sprint**: Possui uma duração fixa e curta, possui um backlog próprio para ser cumprido.
 * Duração mínima de 1 semana e máxima de 1 mês.
@@ -66,9 +68,13 @@ Pretendemos utilizar as seguintes tecnologias:
 
 OBS: Não representam a versão final.
 
-* Front-end: **React**.
+* Front-end: JS, CSS e HTML.
 * Backend: Node JS, Express, Typescript.
 
-## **Inicializando**
+## **Inicializando o projeto**
 
 !TODO
+
+## Integrações
+
+* Integrar os prazos com o calendário do google.
