@@ -1,3 +1,12 @@
+## Daniel - 13.07.2021
+
+Para resolver a **tarefa #13** criei um protótipo básico para a visualização básica de como eu imagino a interface.
+
+Hoje gostaria de criar o layout básico externo ao componentes criados.
+
+Acredito que, por não utilizar frameworks de interface vou ter alguma dificuldade para fazer as alterações.
+Pretendo fazer algumas refatorações e então dar continuidade a tarefa.
+
 ## Daniel - 06.07.2021
 
 Não fiz nada até o momento.
