@@ -7,6 +7,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Andamento do Projeto</title>
 
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css"
+    integrity="sha512-NhSC1YmyruXifcj/KFRWoC561YpHpc5Jtzgvbuzx5VozKpWvQ+4nXhPdFgmx8xqexRcpAglTj9sIBWINXa8x5w=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
     integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"
@@ -22,189 +25,21 @@
 </head>
 
 <body>
-  <div id="root"></div>
+  <div class="header" style="height: 120px; background-color: aquamarine;"></div>
+  <div style="display: flex; flex-direction: row; height: calc(100vh - 200px); overflow-y: scroll;">
+    <div class="sidebar" style="height: 100%; width: 320px; background-color: beige;">
+    </div>
+    <div style="background-color: transparent; width: 100%; overflow-x: scroll;">
+      <div id="root"></div>
+    </div>
+  </div>
+  <div class="footer" style="height: 80px; background-color: blue;">
 
-  <script>
-    const htext = text => document.createTextNode(text);
-    const htag = (tag, { className, children, ...props } = {}) => {
-      const el = document.createElement(tag);
+  </div>
 
-      for (const key in props) {
-        el.setAttribute(key, props[key].toString());
-      }
-
-      if (Array.isArray(children)) {
-        children.forEach(c => {
-          el.appendChild(c);
-        });
-      } else if (children && typeof children === "object") {
-        el.appendChild(children);
-      }
-
-      let classes = [];
-
-      if (Array.isArray(className)) {
-        classes = className;
-      } else {
-        switch (typeof className) {
-          case "string":
-            classes = className.split(/\s+/);
-            break;
-          case "object":
-            classes = Object.keys(className)
-              .filter(cls => className[cls]);
-            break;
-        }
-
-      }
-
-      if (classes.length > 0) {
-        el.classList.add(...classes);
-      }
-
-      return el;
-    }
-    const hdiv = (props) => htag("div", props);
-    const hspan = (text, props) => htag("span", {
-      ...props,
-      children: [htext(text)]
-    });
-
-    const transpose = (arr) => arr[0].map((_, colIndex) => arr.map(row => row[colIndex]));
-
-    function formatDate(datetime) {
-      return moment(datetime).format("DD/MM/yyyy, hh:mm:ss");
-    }
-
-    const root = document.getElementById("root");
-
-    const StagesEnum = {
-      Started: "Started",
-      Doing: "Doing",
-      Testing: "Testing",
-      Reviewing: "Reviewing",
-      Done: "Done"
-    };
-    const stages = _.keys(StagesEnum);
-
-    const tasks1 = [
-      {
-        title: "Primeira Tarefa",
-        points: 100,
-        description: "Hello world",
-        createdAt: new Date(2021, 7, 2, 14, 5, 12),
-        updatedAt: new Date(2021, 7, 2, 14, 9, 37),
-        stage: "Started"
-      },
-      {
-        title: "Primeira Tarefa",
-        points: 100,
-        description: "Hello world",
-        createdAt: new Date(2021, 7, 2, 14, 5, 12),
-        updatedAt: new Date(2021, 7, 2, 14, 9, 37),
-        stage: "Doing"
-      },
-      {
-        title: "Primeira Tarefa",
-        points: 100,
-        description: "Hello world",
-        createdAt: new Date(2021, 7, 2, 14, 5, 12),
-        updatedAt: new Date(2021, 7, 2, 14, 9, 37),
-        stage: "Testing"
-      },
-      {
-        title: "Primeira Tarefa",
-        points: 100,
-        description: "Hello world",
-        createdAt: new Date(2021, 7, 2, 14, 5, 12),
-        updatedAt: new Date(2021, 7, 2, 14, 9, 37),
-        stage: "Reviewing"
-      },
-      {
-        title: "Primeira Tarefa",
-        points: 100,
-        description: "Hello world",
-        createdAt: new Date(2021, 7, 2, 14, 5, 12),
-        updatedAt: new Date(2021, 7, 2, 14, 9, 37),
-        stage: "Done"
-      },
-    ];
-    const tasks = tasks1.concat(tasks1).concat(tasks1);
-
-    function buildTasks(tasks) {
-      const pairs = tasks.map(task => [task.stage, task]);
-      const [validPairs, invalidPairs] = _.partition(pairs, p => !!StagesEnum[p[0]]);
-
-      if (invalidPairs.length > 0) {
-        console.warn("Invalid tasks was founded!", invalidPairs);
-      }
-
-      const tasksMap = validPairs.reduce((obj, [stage, task]) => {
-        obj[stage] = obj[stage] || [];
-        obj[stage].push(task);
-        return obj;
-      }, {});
-      const container$ = hdiv();
-
-      const data = [];
-      const header = [];
-      for (let i = 0; i < stages.length; i++) {
-        const stage = stages[i];
-        const stageTasks = tasksMap[stage];
-
-        header.push(htag("th", {
-          children: [hdiv({
-            className: "p-3 bg-primary text-light text-center rounded",
-            children: htext(stage),
-          })]
-        }));
-
-        data[i] = data[i] || [];
-        stageTasks.forEach(task => {
-          data[i].push(htag("td", {
-            children: hdiv({
-              className: "text-dark",
-              children: [
-                hdiv({
-                  children: [
-                    htext(task.title),
-                    hspan(task.points, { className: "badge badge-light float-sm-right" }),
-                  ],
-                }),
-                hdiv({
-                  style: "font-size: 0.9rem;",
-                  className: "text-muted",
-                  children: htext("Criado em: " + formatDate(task.createdAt))
-                }),
-                hdiv({
-                  style: "font-size: 0.9rem;",
-                  className: "text-muted",
-                  children: htext("Atualizado em: " + formatDate(task.updatedAt))
-                }),
-              ]
-            })
-          }));
-        });
-      }
-
-      const body = transpose(data).map(row => htag("tr", { children: row }))
-      const head = htag("tr", { children: header });
-      container$.appendChild(htag("table", {
-        className: "table",
-        children: [
-          htag("thead", { children: head }),
-          htag("tbody", { children: body })
-        ]
-      }));
-
-      return container$;
-    }
-
-    root.appendChild(hdiv({
-      className: "content",
-      children: buildTasks(tasks)
-    }))
-  </script>
+  <script src="htag.js"></script>
+  <script src="utilities.js"></script>
+  <script src="index.js"></script>
 </body>
 
 </html>
