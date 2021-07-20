@@ -6,6 +6,14 @@ Hoje vi com o Daniel a repeito de quais tarefas ficarei responsavel, decidimos q
 Terei de arranjar uma maneira de aprender o necessário de javascript o quanto antes para não atrasar o desenvolvimento do projeto
 
 
+## Isabela - 13.07.2021
+Não compareci a aula, meus pais e irmã pegaram covid, meu pai ficou na uti por uns dias, por isso não fiquei bem psicologicamente para comparecer a aula.
+
+
+## Isabela - 06.07.2021
+Junto com o Daniel fizemos o planning poker das issues.
+
+
 ## Daniel - 02.07.2021
 
 Fiz alguns experimentos de criação de interface para entender o posicionamento dos elementos.
@@ -14,6 +22,9 @@ Hoje as tarefas gerais foram quebradas em tarefas menores para poder distribuí-
 Também fiz alguumas atualizações nas ideias do projeto.
 
 Como não existe nada concreto ainda, tive dificuldade em fazer as descrições das tarefas menores.
+
+## Isabela - 29.06.2021
+Neste dia, junto com o Daniel desenvolvemos as histórias de usuário e colocamos no zenhub, além de ter realizado o planning poker de cada história.
 
 ## Daniel - 29.06.2021
 
