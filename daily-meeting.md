@@ -1,3 +1,24 @@
+
+## Daniel - 27.07.2021
+
+Depois de um tempo de descanso, consegui inspiração para projetar a interface da listagem de estágios.
+
+Hoje eu criei a listagem de estágios e comecei a imaginar se deveria utilizar algum framework de interface para concretizar cada uma das ideias.
+
+Alguns problemas que estou tendo são em relação ao posicionamento dos itens e do tipo de visualização (flex ou grid).
+
+## Daniel - 23.07.2021
+
+Não fiz nada.
+
+## Daniel - 20.07.2021
+
+Depois de criar o protótipo base da interface, eu procurei imaginar como seria a lista de estágios.
+
+Hoje vou desenvolver outro protótipo baseado em exemplos encontrado no site https://dribbble.com/.
+
+Acredito que imaginar os designs dos exemplos no nosso domínio pode ser um desafio.
+
 ## Luis - 16.07.2021
 Nas ultimas semanas não consegui comparecer em todas as aulas, estudei HTML para tentar desenvolver o front end  mas acabamos decidindo que seria melhor focar no backend por hora.
 
@@ -9,10 +30,26 @@ Terei de arranjar uma maneira de aprender o necessário de javascript o quanto a
 ## Isabela - 13.07.2021
 Não compareci a aula, meus pais e irmã pegaram covid, meu pai ficou na uti por uns dias, por isso não fiquei bem psicologicamente para comparecer a aula.
 
+## Daniel - 13.07.2021
+
+Para resolver a **tarefa #13** criei um protótipo básico para a visualização básica de como eu imagino a interface.
+
+Hoje gostaria de criar o layout básico externo ao componentes criados.
+
+Acredito que, por não utilizar frameworks de interface vou ter alguma dificuldade para fazer as alterações.
+Pretendo fazer algumas refatorações e então dar continuidade a tarefa.
 
 ## Isabela - 06.07.2021
 Junto com o Daniel fizemos o planning poker das issues.
 
+## Daniel - 06.07.2021
+
+Não fiz nada até o momento.
+
+Hoje pontuaremos as tarefas menores e distribuiremos para os integrantes do grupo.
+Distribuímos as tarefas e fiquei responsável pela **tarefa #13**.
+
+Minhas possíveis dificuldades pode ser em relação a design, porém eu decidi fazer protótipos utilizando o bootstrap como gerenciador principal de UI.
 
 ## Daniel - 02.07.2021
 
