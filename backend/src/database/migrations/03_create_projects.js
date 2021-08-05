@@ -6,7 +6,7 @@ module.exports = {
       table.increments("id").primary();
       table.string("name").notNullable();
       table.datetime("start_date").notNullable();
-      table.datetime("final_date").notNullable();
+      table.datetime("final_date");
       table
         .integer("manager_id")
         .notNullable()
