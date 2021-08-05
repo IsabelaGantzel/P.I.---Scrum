@@ -72,5 +72,5 @@ Create Table Dev_create_Project{
     Foreign key (IdDev) REFERENCES Dev;
 }
 
-
+select IdDev from dev
 
