@@ -57,7 +57,7 @@ Create Table Dev{
 Create Table Sprint{
     IdSprint int(4) AUTO_INCREMENT;
     StartDate data;
-    FinisDate data;
+    FinishDate data;
     Nome varchar(25);
     
     Primary key(IdSprint);
@@ -71,6 +71,4 @@ Create Table Dev_create_Project{
     Foreign key (IdProkekt) REFERENCES Project;
     Foreign key (IdDev) REFERENCES Dev;
 }
-
-select IdDev from dev
 
