@@ -1,26 +1,14 @@
-const crypto = require("crypto");
-const buffer = require("buffer");
+const bcrypt = require("bcrypt");
 
-// https://www.geeksforgeeks.org/node-js-crypto-verify-function/
-// https://stackoverflow.com/questions/48611041/using-node-js-crypto-to-verify-signatures
-const algorithm = "SHA256";
-const { privateKey, publicKey } = crypto.generateKeyPairSync("rsa", {
-  modulusLength: 2048,
-});
+// I change crypto to bcrypt because this: https://stackoverflow.com/questions/6951867/nodejs-bcrypt-vs-native-crypto
+// npm bcrypt: https://www.npmjs.com/package/bcrypt
 
 function hashPassword(password) {
-  return crypto
-    .sign(algorithm, Buffer.from(password), privateKey)
-    .toString("hex");
+  return bcrypt.hash(password, 12);
 }
 
 function checkPassword(password, signature) {
-  return crypto.verify(
-    algorithm,
-    Buffer.from(password),
-    publicKey,
-    Buffer.from(signature, "hex")
-  );
+  return bcrypt.compare(password, signature);
 }
 
 module.exports = {

@@ -74,11 +74,11 @@ describe("Password manager", () => {
     expect(hash).not.toBe(input);
   });
   test("checkPassword must returns 'true' a valid hash of a string", async () => {
-    const result = passwordManager.checkPassword(input, hash);
+    const result = await passwordManager.checkPassword(input, hash);
     expect(result).toBe(true);
   });
   test("checkPassword must returns 'false' if a hash is not of a string", async () => {
-    const result = passwordManager.checkPassword(input, input);
+    const result = await passwordManager.checkPassword(input, input);
     expect(result).toBe(false);
   });
 });
