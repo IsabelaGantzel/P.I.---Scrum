@@ -4,6 +4,7 @@ const { STAGES } = require("../../src/operations/constants");
 const goBackTaskStage = require("../../src/operations/goBackTaskStage");
 const advanceTaskStage = require("../../src/operations/advanceTaskStage");
 const storeProject = require("../../src/operations/storeProject");
+const passwordManager = require("../../src/operations/passwordManager");
 
 describe("Update task stage", () => {
   test("advanceTaskStage must returns 'null' if stage is not defined", () => {
@@ -61,5 +62,23 @@ describe("Store project", () => {
       manager_id: data.managerPersonId,
       devs: [{ project_id: 1, person_id: 2 }],
     });
+  });
+});
+
+describe("Password manager", () => {
+  const input = "Hello world";
+  let hash;
+  test("hashPassword must encrypt a input string", async () => {
+    hash = await passwordManager.hashPassword(input);
+    expect(typeof hash).toBe("string");
+    expect(hash).not.toBe(input);
+  });
+  test("checkPassword must returns 'true' a valid hash of a string", async () => {
+    const result = passwordManager.checkPassword(input, hash);
+    expect(result).toBe(true);
+  });
+  test("checkPassword must returns 'false' if a hash is not of a string", async () => {
+    const result = passwordManager.checkPassword(input, input);
+    expect(result).toBe(false);
   });
 });
