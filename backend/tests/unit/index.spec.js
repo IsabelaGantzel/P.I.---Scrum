@@ -1,4 +1,5 @@
 const { describe, expect, test } = require("@jest/globals");
+const JestDateMock = require("jest-date-mock");
 
 const { STAGES } = require("../../src/operations/constants");
 const goBackTaskStage = require("../../src/operations/goBackTaskStage");
@@ -78,6 +79,24 @@ describe("JWT manager", () => {
   test("checkPassword must returns 'true' a valid hash of a string", async () => {
     const result = await jwtManager.readToken(token);
     expect(result).toMatchObject(input);
+  });
+  test("readToken must fail with a expired token", async () => {
+    // Update internal time to test expired feature
+    const today = Date.now();
+    const ONE_DAY = 24 * 60 * 60 * 1000;
+    const sevenDays = 7 * ONE_DAY; // Expiration gap
+    const advancedTime = today + sevenDays + ONE_DAY;
+    JestDateMock.advanceTo(advancedTime);
+
+    try {
+      await jwtManager.readToken(token);
+    } catch (err) {
+      expect(typeof err).toBe("object");
+      expect(typeof err.name).toBe("string");
+      expect(err.name).toBe("TokenExpiredError");
+    }
+
+    JestDateMock.clear();
   });
 });
 

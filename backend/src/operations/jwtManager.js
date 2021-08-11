@@ -11,7 +11,15 @@ function generateToken(data) {
 }
 
 function readToken(token) {
-  return jwt.verify(token, JWT_SECRET);
+  return new Promise((resolve, reject) => {
+    jwt.verify(token, JWT_SECRET, (err, result) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(result);
+      }
+    });
+  });
 }
 
 module.exports = { generateToken, readToken };
