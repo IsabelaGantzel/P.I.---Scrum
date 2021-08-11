@@ -5,6 +5,7 @@ const goBackTaskStage = require("../../src/operations/goBackTaskStage");
 const advanceTaskStage = require("../../src/operations/advanceTaskStage");
 const storeProject = require("../../src/operations/storeProject");
 const passwordManager = require("../../src/operations/passwordManager");
+const jwtManager = require("../../src/operations/jwtManager");
 
 describe("Update task stage", () => {
   test("advanceTaskStage must returns 'null' if stage is not defined", () => {
@@ -62,6 +63,21 @@ describe("Store project", () => {
       manager_id: data.managerPersonId,
       devs: [{ project_id: 1, person_id: 2 }],
     });
+  });
+});
+
+describe("JWT manager", () => {
+  const input = { id: 1 };
+  let token;
+
+  test("hashPassword must encrypt a input string", async () => {
+    token = await jwtManager.generateToken(input);
+    expect(typeof token).toBe("string");
+    expect(token).not.toBe(input);
+  });
+  test("checkPassword must returns 'true' a valid hash of a string", async () => {
+    const result = await jwtManager.readToken(token);
+    expect(result).toMatchObject(input);
   });
 });
 
