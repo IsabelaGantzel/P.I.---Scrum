@@ -1,4 +1,4 @@
-// @ts-nocheck
+const { describe, expect, test } = require("@jest/globals");
 
 const { STAGES } = require("../../src/operations/constants");
 const goBackTaskStage = require("../../src/operations/goBackTaskStage");
