@@ -71,12 +71,12 @@ describe("JWT manager", () => {
   const input = { id: 1 };
   let token;
 
-  test("hashPassword must encrypt a input string", async () => {
+  test("generateToken must create a token of a object", async () => {
     token = await jwtManager.generateToken(input);
     expect(typeof token).toBe("string");
     expect(token).not.toBe(input);
   });
-  test("checkPassword must returns 'true' a valid hash of a string", async () => {
+  test("readToken must returns a object of a token", async () => {
     const result = await jwtManager.readToken(token);
     expect(result).toMatchObject(input);
   });
