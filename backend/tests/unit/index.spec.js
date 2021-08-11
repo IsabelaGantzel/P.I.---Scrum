@@ -5,6 +5,7 @@ const { STAGES } = require("../../src/operations/constants");
 const goBackTaskStage = require("../../src/operations/goBackTaskStage");
 const advanceTaskStage = require("../../src/operations/advanceTaskStage");
 const storeProject = require("../../src/operations/storeProject");
+const validateStoreProject = require("../../src/operations/validateStoreProject");
 const passwordManager = require("../../src/operations/passwordManager");
 const jwtManager = require("../../src/operations/jwtManager");
 
@@ -35,13 +36,17 @@ describe("Update task stage", () => {
 });
 
 describe("Store project", () => {
+  const projectData = {
+    projectName: "Test",
+    clientPersonId: 0,
+    managerPersonId: 1,
+    startDate: Date.now(),
+    devIds: [2],
+  };
+
   test("Must store a project if all fields are passed", async () => {
     const data = {
-      projectName: "Test",
-      clientPersonId: 0,
-      managerPersonId: 1,
-      startDate: new Date(),
-      devIds: [2],
+      ...projectData,
       getClientByPersonId(x) {
         return x;
       },
@@ -64,6 +69,46 @@ describe("Store project", () => {
       manager_id: data.managerPersonId,
       devs: [{ project_id: 1, person_id: 2 }],
     });
+  });
+
+  describe("Validate project data", () => {
+    async function doTest(attrs) {
+      return validateStoreProject({
+        ...projectData,
+        existsPersonById() {
+          return true;
+        },
+        ...attrs,
+      });
+    }
+
+    test("must returns { value } if the data is valid and ids exists", async () => {
+      const result = await doTest({});
+      expect(result.value).toMatchObject(projectData);
+    });
+    test("must returns { name, error, message } if has type errors", async () => {
+      const result = await doTest({
+        projectName: 123,
+        clientPersonId: "x",
+        managerPersonId: "y",
+      });
+      expect(result.name).toBeDefined();
+      expect(result.error).toBeDefined();
+    });
+
+    function testPersonIdExists(label, invalidId) {
+      test(`must returns { name, message } if some person id not exists (${label})`, async () => {
+        const result = await doTest({
+          existsPersonById: (personId) => personId !== invalidId,
+        });
+        expect(result.name).toBeDefined();
+        expect(result.error).toBeUndefined();
+      });
+    }
+
+    testPersonIdExists("manager", projectData.managerPersonId);
+    testPersonIdExists("client", projectData.clientPersonId);
+    testPersonIdExists("dev", projectData.devIds[0]);
   });
 });
 
