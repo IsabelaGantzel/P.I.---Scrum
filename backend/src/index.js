@@ -1,8 +1,8 @@
 const express = require("express");
 const cors = require("cors");
 const Joi = require("joi");
+const path = require("path");
 require("express-async-errors");
-const JwtManager = require("./jwt-manager");
 
 const validateRequest = require("./validateRequest");
 const db = require("./memory-database");
@@ -42,6 +42,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+app.use(express.static(path.join(__dirname, "..", "public")));
+
 app.get("/api/projects/:projectId", (req, res) => {
   console.log(req.params);
   res.json({ message: "OK" });
@@ -57,8 +59,6 @@ app.post(
   ),
   async (req, res) => {
     const person = await getPersonByName(req.body.userName);
-
-    JwtManager;
   }
 );
 
