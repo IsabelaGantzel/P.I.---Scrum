@@ -33,8 +33,8 @@
         <div class="content-header">
           <h2>Sprint atual</h2>
         </div>
-        <div class="stage-table">
 
+        <div class="stage-table">
           <div class="stage-table-container">
             <template x-for="stage in stages" :key="stage.name">
               <div class="stage">
@@ -43,16 +43,16 @@
                   <div class="stage-info" x-text="stage.info"></div>
                 </div>
                 <div class="stage-body">
-                  <template x-for="task in stage.tasks" :key="task.id">
+                  <template x-for="taskId in stage.tasks" :key="taskId">
                     <div class="task">
-                      <div class="task-prev-stage" @click="prevStage(task.id)"></div>
+                      <div class="task-prev-stage" @click="prevStage(taskId)"></div>
                       <div class="task-content">
                         <div class="task-title">
-                          <strong x-text="task.points"></strong>
-                          <span x-text="task.title"></span>
+                          <strong x-text="tasks[taskId].points"></strong>
+                          <span x-text="tasks[taskId].title"></span>
                         </div>
                       </div>
-                      <div class="task-next-stage" @click="nextStage(task.id)"></div>
+                      <div class="task-next-stage" @click="nextStage(taskId)"></div>
                     </div>
                   </template>
                 </div>
@@ -80,13 +80,13 @@
           { name: "reviewing", title: "🔵 Revisão", info: "0 itens - 0 pontos", tasks: [], next: "complete", prev: "testing" },
           { name: "complete", title: "🟢 Completo", info: "1 itens - 20 pontos", tasks: [], next: null, prev: "reviewing" },
         ],
-        allTasks: {},
+        tasks: {},
         _fillTasks(tasks) {
           for (const task of tasks) {
             const stage = this.stages.find(s => s.name === task.stage);
             if (stage) {
-              this.allTasks[task.id] = task;
-              stage.tasks.push(task);
+              this.tasks[task.id] = task;
+              stage.tasks.push(task.id);
             }
           }
         },
@@ -132,22 +132,22 @@
           if (newStage) {
             task.stage = newStage.name;
 
-            const lastIndex = lastStage.tasks.findIndex(t => t.id === task.id);
+            const lastIndex = lastStage.tasks.findIndex(t => t === task.id);
             lastStage.tasks.splice(lastIndex, 1);
 
             const newIndex = Math.min(newStage.tasks.length - 1, lastIndex);
-            newStage.tasks.splice(newIndex, 0, task);
+            newStage.tasks.splice(newIndex, 0, task.id);
           }
         },
         prevStage(taskId) {
-          if (taskId in this.allTasks) {
-            const task = this.allTasks[taskId];
+          if (taskId in this.tasks) {
+            const task = this.tasks[taskId];
             this._updateStage(task, "prev");
           }
         },
         nextStage(taskId) {
-          if (taskId in this.allTasks) {
-            const task = this.allTasks[taskId];
+          if (taskId in this.tasks) {
+            const task = this.tasks[taskId];
             this._updateStage(task, "next");
           }
         }
