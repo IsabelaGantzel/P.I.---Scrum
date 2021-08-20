@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="../css/fonts.css">
+  <link rel="stylesheet" href="login.css">
+</head>
+
+<body style="opacity: 0; transition: opacity 1s ease-out;">
+  <div class="page" x-data="pageData()" x-init="onInit()">
+    <div class="login-container">
+      <h1>Login</h1>
+      <input type="text" id="userName" name="userName" placeholder="Usuário">
+      <input type="password" id="password" name="password" placeholder="Senha">
+      <button class="login-btn" onclick="submitLogin()">
+        Entrar
+      </button>
+    </div>
+  </div>
+
+  <script>
+    function submitLogin() {
+      console.log("Submit");
+      document.body.style.opacity = "0";
+      document.body.style.pointerEvents = "none";
+    }
+
+    document.body.style.opacity = "1";
+  </script>
+</body>
+
+</html>
