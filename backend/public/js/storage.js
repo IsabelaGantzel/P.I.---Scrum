@@ -2,10 +2,15 @@ const storage = (() => {
   function Store(key) {
     return {
       set(value) {
-        localStorage.setItem(key, value);
+        if (typeof value === "string") {
+          localStorage.setItem(key, value);
+        }
       },
       get() {
         return localStorage.getItem(key);
+      },
+      clear() {
+        localStorage.removeItem(key);
       },
     };
   }
