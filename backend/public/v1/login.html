@@ -68,6 +68,15 @@
               return;
             }
 
+            const data = await api.login({ userName, password });
+            storage.token.set(data.token);
+
+            document.body.style.opacity = "0";
+            document.body.style.pointerEvents = "none";
+
+            setTimeout(() => {
+              navigation.goToHome();
+            }, 1000);
           } catch (err) {
             console.log(err);
           }
