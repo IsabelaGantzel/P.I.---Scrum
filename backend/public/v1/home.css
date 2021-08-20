@@ -1,0 +1,178 @@
+.btn-opacity {
+  transition-property: opacity;
+  transition-duration: 0.1s;
+}
+
+.btn-opacity:hover {
+  opacity: 0.9;
+}
+
+button {
+  cursor: pointer;
+}
+
+.page {
+  background-color: #eff2f7;
+  height: 100vh;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 24px;
+}
+
+.header-navbar {
+  display: flex;
+}
+
+.navbar-btn {
+  padding: 12px 0;
+  margin: 0 24px;
+  opacity: 0.3;
+  font-weight: 600;
+
+  transition-property: opacity;
+  transition-duration: 0.3s;
+  text-decoration: none;
+}
+
+.navbar-btn.active {
+  opacity: 1;
+  border-bottom: 2px solid #52b5d3;
+  border-radius: 2px;
+}
+
+.navbar-btn:hover {
+  cursor: pointer;
+  opacity: 1;
+}
+
+.content {
+  display: flex;
+  justify-content: center;
+}
+
+.content-container {
+  width: max(60%, 820px);
+  padding: 12px 0;
+}
+
+.content-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.content-header h2 {
+  font-weight: 600;
+}
+
+.content-header button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  font-weight: 600;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  background-color: #1670e6;
+  padding: 6px 16px;
+}
+
+.content-header button span {
+  padding-right: 4px;
+  color: #fff;
+  font-size: 20px;
+}
+
+.main-projects {
+  padding: 16px 0;
+  display: flex;
+  gap: 22px;
+  /* white-space: nowrap; */
+}
+
+.main-projects .project {
+  width: 32%;
+}
+
+.main-projects .project-container {
+  padding: 16px;
+  background-color: #fff;
+}
+
+/* .main-projects .project-icon {} */
+
+.main-projects .project-name {
+  font-weight: 600;
+}
+
+.main-projects .project-measures {
+  font-weight: 400;
+  color: #a4a4a4;
+}
+
+.project-list {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  padding: 16px 0;
+}
+
+.project-list .project {
+  background-color: #fff;
+  padding: 12px 24px;
+  border-radius: 4px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.project-list .project-name {
+  display: flex;
+  gap: 8px;
+  padding-bottom: 16px;
+}
+
+.project-list .project-name span {
+  font-weight: 600;
+  font-size: 22px;
+  text-decoration: underline;
+}
+
+.project-list .project-sprint {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  height: 20px;
+  padding: 0 8px;
+
+  border-radius: 8px;
+
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+
+  background-color: #1670e6;
+}
+
+.project-list .project-end-at span {
+  font-weight: 600;
+}
+
+.project-list button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  font-weight: 600;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  background-color: #1670e6;
+  padding: 6px 16px;
+}

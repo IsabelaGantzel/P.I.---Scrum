@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="../css/fonts.css">
+  <link rel="stylesheet" href="../css/reset.css">
+  <link rel="stylesheet" href="home.css">
+  <script src="../js/alpinev2.8.2.min.js" defer></script>
+</head>
+
+<body>
+  <div class="page" x-data="pageData()" x-init="onInit()">
+    <div class="header">
+      <!-- Purposely empty elements to add alignment and later add components. -->
+      <div></div>
+      <nav class="header-navbar">
+        <a class="navbar-btn" :class="{ 'active': tab === 'main' }" @click.prevent="tab = 'main'" href="#">
+          Meus projetos
+        </a>
+        <a class="navbar-btn" :class="{ 'active': tab === 'calendar' }" @click.prevent="tab = 'calendar'" href="#">
+          Calendário
+        </a>
+      </nav>
+      <div></div>
+    </div>
+
+    <div class="content-mark content" x-show="tab === 'main'">
+      <div class="content-container">
+        <div class="content-header">
+          <h2>Lista de projetos</h2>
+          <button class="btn-opacity"><span>+</span>Novo projeto</button>
+        </div>
+        <div class="project-list">
+          <template x-for="project in projects" :key="project.id">
+            <div class="project">
+              <div class="project-container">
+                <div class="project-name">
+                  <span x-text="project.title"></span>
+                  <div class="project-sprint" x-text="project.sprint"></div>
+                </div>
+                <div class="project-end-at">
+                  <span>Data do fim da sprint:</span>
+                  <div x-text="project.final_date"></div>
+                </div>
+              </div>
+              <div class="see-project">
+                <button class="btn-opacity" x-on:click="window.location = project.url">Ver Projeto</button>
+              </div>
+            </div>
+          </template>
+        </div>
+      </div>
+    </div>
+
+    <div class="content-mark" x-show="tab === 'calendar'">
+
+    </div>
+  </div>
+
+  <script>
+    function pageData() {
+      return {
+        tab: 'main',
+        projects: [],
+        onInit() {
+          this.projects = [
+            {
+              id: 0,
+              title: "Projeto Integrador",
+              sprint: "1 sprint",
+              final_date: "25/12/2021",
+              url: "project.html?id=0"
+            },
+            {
+              id: 1,
+              title: "Mineração de Repositórios",
+              sprint: "2 sprint",
+              final_date: "25/12/2021",
+              url: "project.html?id=0"
+            },
+          ];
+        }
+      }
+    }
+  </script>
+</body>
+
+</html>

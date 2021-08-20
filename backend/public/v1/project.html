@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="../css/fonts.css">
+  <link rel="stylesheet" href="../css/reset.css">
+  <link rel="stylesheet" href="project.css">
+  <script src="../js/alpinev2.8.2.min.js" defer></script>
+</head>
+
+<body>
+  <div class="page" x-data="pageData()" x-init="onInit()">
+    <div class="header">
+      <!-- Purposely empty elements to add alignment and later add components. -->
+      <div></div>
+      <nav class="header-navbar">
+        <a class="navbar-btn" :class="{ 'active': tab === 'main' }" @click.prevent="tab = 'main'" href="#">
+          Sprint atual
+        </a>
+        <a class="navbar-btn" :class="{ 'active': tab === 'reports' }" @click.prevent="tab = 'reports'" href="#">
+          Relatórios
+        </a>
+      </nav>
+      <div></div>
+    </div>
+
+    <div class="content-mark content" x-show="tab === 'main'">
+      <div class="content-container">
+        <div class="content-header">
+          <h2>Sprint atual</h2>
+        </div>
+        <div class="stage-table">
+
+          <div class="stage-table-container">
+            <template x-for="stage in stages" :key="stage.name">
+              <div class="stage">
+                <div class="stage-header">
+                  <div class="stage-name" x-text="stage.title"></div>
+                  <div class="stage-info" x-text="stage.info"></div>
+                </div>
+                <div class="stage-body">
+                  <template x-for="task in stage.tasks" :key="task.id">
+                    <div class="task">
+                      <div class="task-prev-stage" @click="prevStage(task.id)"></div>
+                      <div class="task-content">
+                        <div class="task-title">
+                          <strong x-text="task.points"></strong>
+                          <span x-text="task.title"></span>
+                        </div>
+                      </div>
+                      <div class="task-next-stage" @click="nextStage(task.id)"></div>
+                    </div>
+                  </template>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content-mark content" x-show="tab === 'reports'">
+      <div class="content-container">
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function pageData() {
+      return {
+        tab: 'main',
+        stages: [
+          { name: "started", title: "🟣 Início", info: "2 itens - 40 pontos", tasks: [], next: "doing", prev: null },
+          { name: "doing", title: "🟠 Em progresso", info: "1 itens - 20 pontos", tasks: [], next: "testing", prev: "started" },
+          { name: "testing", title: "🟡 Teste", info: "0 itens - 0 pontos", tasks: [], next: "reviewing", prev: "doing" },
+          { name: "reviewing", title: "🔵 Revisão", info: "0 itens - 0 pontos", tasks: [], next: "complete", prev: "testing" },
+          { name: "complete", title: "🟢 Completo", info: "1 itens - 20 pontos", tasks: [], next: null, prev: "reviewing" },
+        ],
+        allTasks: {},
+        _fillTasks(tasks) {
+          for (const task of tasks) {
+            const stage = this.stages.find(s => s.name === task.stage);
+            if (stage) {
+              this.allTasks[task.id] = task;
+              stage.tasks.push(task);
+            }
+          }
+        },
+        onInit() {
+          let id = 0;
+          const tasks = [
+            ...Array.from({ length: 2 }, () => ({
+              id: id++,
+              title: "Projeto Integrador " + id,
+              points: "(20)",
+              stage: "started"
+            })),
+            ...Array.from({ length: 1 }, () => ({
+              id: id++,
+              title: "Projeto Integrador " + id,
+              points: "(20)",
+              stage: "doing"
+            })),
+            ...Array.from({ length: 3 }, () => ({
+              id: id++,
+              title: "Projeto Integrador " + id,
+              points: "(20)",
+              stage: "reviewing"
+            })),
+            ...Array.from({ length: 10 }, () => ({
+              id: id++,
+              title: "Projeto Integrador " + id,
+              points: "(20)",
+              stage: "complete"
+            }))
+          ];
+
+          this._fillTasks(tasks);
+        },
+        _updateStage(task, direction) {
+          const stages = {};
+          for (const stage of this.stages)
+            stages[stage.name] = stage;
+
+          const lastStage = stages[task.stage];
+          const newStage = stages[lastStage[direction]];
+
+          if (newStage) {
+            task.stage = newStage.name;
+
+            const lastIndex = lastStage.tasks.findIndex(t => t.id === task.id);
+            lastStage.tasks.splice(lastIndex, 1);
+
+            const newIndex = Math.min(newStage.tasks.length - 1, lastIndex);
+            newStage.tasks.splice(newIndex, 0, task);
+          }
+        },
+        prevStage(taskId) {
+          if (taskId in this.allTasks) {
+            const task = this.allTasks[taskId];
+            this._updateStage(task, "prev");
+          }
+        },
+        nextStage(taskId) {
+          if (taskId in this.allTasks) {
+            const task = this.allTasks[taskId];
+            this._updateStage(task, "next");
+          }
+        }
+      }
+    }
+  </script>
+</body>
+
+</html>
