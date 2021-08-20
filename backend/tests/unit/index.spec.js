@@ -6,8 +6,8 @@ const goBackTaskStage = require("../../src/operations/goBackTaskStage");
 const advanceTaskStage = require("../../src/operations/advanceTaskStage");
 const storeProject = require("../../src/operations/storeProject");
 const validateStoreProject = require("../../src/operations/validateStoreProject");
-const passwordManager = require("../../src/operations/passwordManager");
-const jwtManager = require("../../src/operations/jwtManager");
+const passwordManager = require("../../src/services/passwordManager");
+const jwtManager = require("../../src/services/jwtManager");
 
 describe("Update task stage", () => {
   test("advanceTaskStage must returns 'null' if stage is not defined", () => {

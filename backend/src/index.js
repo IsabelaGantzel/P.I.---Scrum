@@ -6,6 +6,7 @@ require("express-async-errors");
 
 const validateRequest = require("./validateRequest");
 const db = require("./memory-database");
+const jwtManager = require("./services/jwtManager");
 
 async function getClientId(personId) {
   for (const id in db.clients.entities) {
@@ -44,10 +45,16 @@ app.use(express.json());
 
 app.use(express.static(path.join(__dirname, "..", "public")));
 
-app.get("/api/projects/:projectId", (req, res) => {
-  console.log(req.params);
-  res.json({ message: "OK" });
-});
+const mockPersonId = 1231231;
+
+function extractToken(req) {
+  const BEARER = "Bearer ";
+  const bearerToken = req.headers["Authorization"];
+  if (bearerToken && bearerToken.startsWith(BEARER)) {
+    return jwtManager.readToken(bearerToken.slice(BEARER.length));
+  }
+  return null;
+}
 
 app.post(
   "/api/auth/login",
@@ -58,12 +65,27 @@ app.post(
     })
   ),
   async (req, res) => {
-    const person = await getPersonByName(req.body.userName);
+    try {
+      // const person = await getPersonByName(req.body.userName);
+      const token = jwtManager.generateToken({ personId: mockPersonId });
+      res.json({
+        token,
+        message: "Login success!",
+      });
+    } catch (err) {
+      console.log(err);
+    }
   }
 );
 
 app.get("/api/projects", async (req, res) => {
-  res.json({});
+  const token = await extractToken(req);
+  console.log(token);
+  res.json({ HERE: "2" });
+});
+
+app.get("/api/projects/:projectId", (req, res) => {
+  res.json({ message: "OK" });
 });
 
 app.post(
