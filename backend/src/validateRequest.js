@@ -14,7 +14,7 @@ function validateRequest(schema, picker = (req) => req.body) {
     const { error, value } = schema.validate(picker(req), options);
     if (error) {
       const errors = error.details.map((x) => x.message);
-      res.status(404).json({
+      res.status(400).json({
         message: `Validation error: ${errors.join(", ")}`,
         error: errors,
       });
