@@ -8,28 +8,72 @@
   <title>Document</title>
   <link rel="stylesheet" href="../css/fonts.css">
   <link rel="stylesheet" href="login.css">
+
+  <script src="../js/api.js"></script>
+  <script src="../js/storage.js"></script>
+  <script src="../js/navigation.js"></script>
+  <script src="../js/alpinev2.8.2.min.js"></script>
 </head>
 
 <body style="opacity: 0; transition: opacity 1s ease-out;">
   <div class="page" x-data="pageData()" x-init="onInit()">
+    <div class="error-message" x-show="error.length > 0">
+      <p x-text="error"></p>
+    </div>
     <div class="login-container">
       <h1>Login</h1>
-      <input type="text" id="userName" name="userName" placeholder="Usuário">
-      <input type="password" id="password" name="password" placeholder="Senha">
-      <button class="login-btn" onclick="submitLogin()">
+      <input type="text" x-model="userName" placeholder="Usuário">
+      <input type="password" x-model="password" placeholder="Senha">
+      <button class="login-btn" @click="submitLogin">
         Entrar
       </button>
     </div>
   </div>
 
   <script>
-    function submitLogin() {
-      console.log("Submit");
-      document.body.style.opacity = "0";
-      document.body.style.pointerEvents = "none";
-    }
+    function pageData() {
+      return {
+        error: "",
+        userName: "",
+        password: "",
+        onInit() {
+          const token = storage.token.get();
+          if (token) {
+            navigation.goToHome();
+          } else {
+            document.body.style.opacity = "1";
+          }
 
-    document.body.style.opacity = "1";
+          let id = null;
+          this.$watch("error", value => {
+            if (value.length > 0) {
+              if (id) clearTimeout(id);
+              id = setTimeout(() => {
+                this.error = "";
+              }, 5000);
+            }
+          });
+        },
+        async submitLogin() {
+          try {
+            const { userName, password } = this;
+
+            if (userName.length === 0) {
+              this.error = "Nome de usuário não pode ser vazio!"
+              return;
+            }
+
+            if (password.length === 0) {
+              this.error = "A senha não pode ser vazia!"
+              return;
+            }
+
+          } catch (err) {
+            console.log(err);
+          }
+        }
+      }
+    }
   </script>
 </body>
 
