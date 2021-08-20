@@ -19,6 +19,9 @@
       <div></div>
       <nav class="header-navbar">
         <a class="navbar-btn" :class="{ 'active': tab === 'main' }" @click.prevent="tab = 'main'" href="#">
+          Principal
+        </a>
+        <a class="navbar-btn" :class="{ 'active': tab === 'projects' }" @click.prevent="tab = 'projects'" href="#">
           Meus projetos
         </a>
         <a class="navbar-btn" :class="{ 'active': tab === 'calendar' }" @click.prevent="tab = 'calendar'" href="#">
@@ -29,6 +32,38 @@
     </div>
 
     <div class="content-mark content" x-show="tab === 'main'">
+      <div class="content-container">
+        <div class="content-header">
+          <h2>Olá, Daniel</h2>
+          <button class="btn-opacity"><span>+</span>Novo projeto</button>
+        </div>
+        <div class="main-projects">
+          <div class="project">
+            <div class="project-container">
+              <div class="project-icon"></div>
+              <div class="project-name">Cliente</div>
+              <div class="project-measures">3 projetos</div>
+            </div>
+          </div>
+          <div class="project">
+            <div class="project-container">
+              <div class="project-icon"></div>
+              <div class="project-name">Desenvolvedor</div>
+              <div class="project-measures">2 projetos</div>
+            </div>
+          </div>
+          <div class="project">
+            <div class="project-container">
+              <div class="project-icon"></div>
+              <div class="project-name">Gerente</div>
+              <div class="project-measures">1 projetos</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content-mark content" x-show="tab === 'projects'">
       <div class="content-container">
         <div class="content-header">
           <h2>Lista de projetos</h2>
