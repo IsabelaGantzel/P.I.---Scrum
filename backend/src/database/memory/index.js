@@ -1,7 +1,8 @@
 function _insert(table) {
   async function inserter(data) {
     if (Array.isArray(data)) {
-      return Promise.all(data.map(inserter));
+      const result = await Promise.all(data.map(inserter));
+      return result.flat();
     } else {
       const id = db.models[table].currentId++;
       db.models[table].entities[id] = { id, ...data };
@@ -41,18 +42,24 @@ const db = {
     return models.devs.insert(devs);
   },
   async getClient(personId) {
+    const person = await models.persons.findById(personId);
+    if (!person) return null;
+
     for (const id in db.models.clients.entities) {
       if (db.models.clients.entities[id].person_id === personId) {
-        return id;
+        return Number(id);
       }
     }
     const [clientId] = await db.models.clients.insert({ person_id: personId });
     return clientId;
   },
   async getManager(personId) {
+    const person = await models.persons.findById(personId);
+    if (!person) return null;
+
     for (const id in db.models.managers.entities) {
       if (db.models.managers.entities[id].person_id === personId) {
-        return id;
+        return Number(id);
       }
     }
     const [clientId] = await db.models.managers.insert({ person_id: personId });
