@@ -25,5 +25,5 @@ const storage = (() => {
     }
   }
 
-  return Object.assign(_storage, { clearAll });
+  return { ..._storage, clearAll };
 })();

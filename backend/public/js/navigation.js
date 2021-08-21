@@ -6,6 +6,6 @@ const navigation = (() => {
   return {
     goToLogin: () => goTo("login.html"),
     goToHome: () => goTo("home.html"),
-    goToProjects: (projectId) => goTo("project.html?id=" + projectId),
+    goToProject: (projectId) => goTo("project.html?id=" + projectId),
   };
 })();
