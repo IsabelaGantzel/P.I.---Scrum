@@ -34,6 +34,12 @@ const models = Object.fromEntries(
 
 const db = {
   models,
+  async insertProject(projectData) {
+    return models.projects.insert(projectData);
+  },
+  async insertDevs(devs) {
+    return models.devs.insert(devs);
+  },
   async getClient(personId) {
     for (const id in db.models.clients.entities) {
       if (db.models.clients.entities[id].person_id === personId) {
