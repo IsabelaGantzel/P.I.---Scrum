@@ -8,6 +8,8 @@ const validateRequest = require("./validateRequest");
 const db = require("./memory-database");
 const jwtManager = require("./services/jwtManager");
 
+const auth = require("./controllers/auth");
+
 async function getClientId(personId) {
   for (const id in db.clients.entities) {
     if (db.clients.entities[id].person_id === personId) {
@@ -45,8 +47,6 @@ app.use(express.json());
 
 app.use(express.static(path.join(__dirname, "..", "public")));
 
-const mockPersonId = 1231231;
-
 function extractToken(req) {
   const BEARER = "Bearer ";
   const bearerToken = req.headers["Authorization"];
@@ -64,18 +64,7 @@ app.post(
       password: Joi.string().required(),
     })
   ),
-  async (req, res) => {
-    try {
-      // const person = await getPersonByName(req.body.userName);
-      const token = jwtManager.generateToken({ personId: mockPersonId });
-      res.json({
-        token,
-        message: "Login success!",
-      });
-    } catch (err) {
-      console.log(err);
-    }
-  }
+  auth.login
 );
 
 app.get("/api/projects", async (req, res) => {
