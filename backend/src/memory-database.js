@@ -3,8 +3,8 @@ function _insert(table) {
     if (Array.isArray(data)) {
       return Promise.all(data.map(inserter));
     } else {
-      const id = db[table].currentId++;
-      db[table].entities[id] = { id, ...data };
+      const id = db.models[table].currentId++;
+      db.models[table].entities[id] = { id, ...data };
       return [id];
     }
   }
@@ -13,7 +13,7 @@ function _insert(table) {
 }
 
 function _findById(table) {
-  return async (id) => db[table].entities[id] || null;
+  return async (id) => db.models[table].entities[id] || null;
 }
 
 function _table(table) {
@@ -25,11 +25,33 @@ function _table(table) {
   };
 }
 
-const db = Object.fromEntries(
+const models = Object.fromEntries(
   ["projects", "devs", "persons", "clients", "managers"].map((table) => [
     table,
     _table(table),
   ])
 );
+
+const db = {
+  models,
+  async getClient(personId) {
+    for (const id in db.models.clients.entities) {
+      if (db.models.clients.entities[id].person_id === personId) {
+        return id;
+      }
+    }
+    const [clientId] = await db.models.clients.insert({ person_id: personId });
+    return clientId;
+  },
+  async getManager(personId) {
+    for (const id in db.models.managers.entities) {
+      if (db.models.managers.entities[id].person_id === personId) {
+        return id;
+      }
+    }
+    const [clientId] = await db.models.managers.insert({ person_id: personId });
+    return clientId;
+  },
+};
 
 module.exports = db;
