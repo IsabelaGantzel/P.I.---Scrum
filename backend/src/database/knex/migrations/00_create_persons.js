@@ -4,7 +4,7 @@ module.exports = {
   async up(knex) {
     return knex.schema.createTable(TABLE_NAME, (table) => {
       table.increments("id").primary();
-      table.string("user").notNullable();
+      table.string("user").unique().notNullable();
       table.string("password").notNullable();
     });
   },
