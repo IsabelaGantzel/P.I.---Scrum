@@ -2,18 +2,19 @@ const fs = require("fs");
 const { knex } = require("knex");
 const config = require("./config");
 const knexfile = require("../../../knexfile");
+const instance = require("../../../src/database/knex/instance");
 
-const instance = knex(config);
+const testKnex = knex(config);
 
 module.exports = {
-  instance,
+  instance: instance(testKnex),
   async createInstance() {
-    await instance.migrate.latest(knexfile.migrations);
-    await instance.seed.run(knexfile.seeds);
-    return instance;
+    await testKnex.migrate.latest(knexfile.migrations);
+    await testKnex.seed.run(knexfile.seeds);
+    return testKnex;
   },
   async dropInstance() {
-    instance.destroy();
+    testKnex.destroy();
     fs.unlinkSync(config.connection.filename);
   },
 };
