@@ -139,6 +139,11 @@ app.get("/debug", (req, res) => {
 });
 
 const port = 3000;
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`Application stated in http://localhost:${port}`);
+});
+
+process.on("SIGINT", () => {
+  server.close();
+  process.exit(0);
 });
