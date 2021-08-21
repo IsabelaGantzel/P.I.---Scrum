@@ -1,50 +1,52 @@
-const api = {
-  _token: null,
-  _setToken(token) {
-    api._token = `Bearer ${token}`;
-  },
-  clearToken(token) {
-    api._token = null;
-  },
-  _getAuthorization() {
+const api = (() => {
+  let token = null;
+  function getAuthorization() {
     return this._token ? { Authorization: this._token } : {};
-  },
-  _post(url, { body, headers = {}, ...opts }) {
+  }
+  function post(url, { body, headers = {}, ...opts }) {
     return fetch(url, {
       ...opts,
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        ...api._getAuthorization(),
+        ...getAuthorization(),
         ...headers,
       },
       body: body !== undefined ? JSON.stringify(body) : body,
     }).then((res) => res.json());
-  },
-  _get(url, opts = {}) {
+  }
+  function get(url, opts = {}) {
     return fetch(url, opts).then((res) => res.json());
-  },
+  }
+  function setToken(token) {
+    token = `Bearer ${token}`;
+  }
 
-  async login({ userName, password }) {
-    if (api._token) throw new Error("You are already authenticated!");
-    const res = await api._post("/api/auth/login", {
-      body: { userName, password },
-    });
-    api._setToken(res.token);
-    return res;
-  },
-  async projects() {
-    if (!api._token) throw new Error("Token missing");
-    return await api._get("/api/projects");
-  },
-  async project(projectId) {
-    if (!api._token) throw new Error("Token missing");
-    return await api._get(`/api/projects/${projectId}`);
-  },
-  async newProject({ projectName, managerId, clientId, devIds }) {
-    if (!api._token) throw new Error("Token missing");
-    return await api._post(`/api/projects/`, {
-      body: { projectName, managerId, clientId, devIds },
-    });
-  },
-};
+  return {
+    clearToken() {
+      token = null;
+    },
+    async login({ userName, password }) {
+      if (token) throw new Error("You are already authenticated!");
+      const res = await post("/api/auth/login", {
+        body: { userName, password },
+      });
+      setToken(res.token);
+      return res;
+    },
+    async projects() {
+      if (!token) throw new Error("Token missing");
+      return await get("/api/projects");
+    },
+    async project(projectId) {
+      if (!token) throw new Error("Token missing");
+      return await get(`/api/projects/${projectId}`);
+    },
+    async newProject({ projectName, managerId, clientId, devIds }) {
+      if (!token) throw new Error("Token missing");
+      return await post(`/api/projects/`, {
+        body: { projectName, managerId, clientId, devIds },
+      });
+    },
+  };
+})();
