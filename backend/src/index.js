@@ -5,7 +5,6 @@ const path = require("path");
 require("express-async-errors");
 
 const validateRequest = require("./validateRequest");
-const db = require("./memory-database");
 const jwtManager = require("./services/jwtManager");
 
 const auth = require("./controllers/auth");

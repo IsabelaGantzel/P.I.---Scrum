@@ -1,4 +1,4 @@
-const db = require("../memory-database");
+const db = require("../database/memory");
 
 module.exports = {
   async store(req, res) {
