@@ -1,4 +1,4 @@
-const db = require("../database/memory");
+const db = require("../database");
 
 module.exports = {
   async store(req, res) {
@@ -12,9 +12,9 @@ module.exports = {
       client_id: clientId,
     };
 
-    const [projectId] = await db.models.projects.insert(projectData);
+    const [projectId] = await db.insertProject(projectData);
 
-    await db.models.devs.insert(
+    const devs = await db.insertDevs(
       req.body.devIds.map((personId) => {
         return {
           project_id: projectId,
@@ -26,6 +26,7 @@ module.exports = {
     res.json({
       id: projectId,
       ...projectData,
+      devs,
     });
   },
 };
