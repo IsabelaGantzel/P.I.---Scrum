@@ -61,17 +61,6 @@ app.post(
   projects.store
 );
 
-app.get("/debug", (req, res) => {
-  console.log(
-    Object.fromEntries(
-      Object.entries(db).map(([key, value]) => {
-        return [key, { entities: value.entities, currentId: value.currentId }];
-      })
-    )
-  );
-  res.json({ ok: true });
-});
-
 const port = 3000;
 const server = app.listen(port, () => {
   console.log(`Application stated in http://localhost:${port}`);
