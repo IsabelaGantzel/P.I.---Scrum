@@ -17,6 +17,13 @@ const storage = (() => {
 
   const prefix = "app-scrum-";
   const keys = ["token"].map((key) => [key, Store(prefix + key)]);
+  const _storage = Object.fromEntries(keys);
 
-  return Object.fromEntries(keys);
+  function clearAll() {
+    for (const key in _storage) {
+      storage[key].clear();
+    }
+  }
+
+  return Object.assign(_storage, { clearAll });
 })();
