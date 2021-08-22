@@ -67,5 +67,35 @@ module.exports = (query) => {
         .limit(25);
       return projects;
     },
+    async getProject({ projectId }) {
+      const [project] = await query
+        .select()
+        .from("projects")
+        .where("id", projectId);
+      if (project) {
+        const tasks = await query
+          .select("t.*", "s.*", query.raw("sg.name as sprint"))
+          .from({ t: "tasks" })
+          .join({ st: "sprint_tasks" }, "t.id", "=", "st.task_id")
+          .join({ s: "sprints" }, "s.id", "=", "st.sprint_id")
+          .join({ sg: "stages" }, "sg.id", "=", "st.stage_id")
+          .where("project_id", project.id);
+        const [{ count }] = await query
+          .count({ count: "sp.id" })
+          .from({
+            st: "sprint_tasks",
+            p: "projects",
+            t: "tasks",
+            sp: "sprints",
+          })
+          .whereRaw(query.raw("p.id = t.project_id"))
+          .andWhereRaw(query.raw("st.task_id = t.id"))
+          .andWhereRaw(query.raw("st.sprint_id = sp.id"))
+          .andWhere("p.id", projectId);
+        return { ...project, tasks, sprint_count: count };
+      } else {
+        return null;
+      }
+    },
   };
 };

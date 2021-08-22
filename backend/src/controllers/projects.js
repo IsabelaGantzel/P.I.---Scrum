@@ -35,4 +35,10 @@ module.exports = {
     const projects = await db.getProjects({ personId, page });
     res.json({ result: projects });
   },
+  async show(req, res) {
+    const { personId } = req.locals.token;
+    const { projectId } = req.params;
+    const project = await db.getProject({ projectId });
+    res.jsoN(project);
+  },
 };

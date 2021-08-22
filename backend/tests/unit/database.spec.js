@@ -174,4 +174,36 @@ describe("Knex Database", () => {
       expect(firstId).toBe(secondId);
     });
   });
+
+  test("db.getProject() must return a complete project", async () => {
+    const project = await db.getProject({ projectId: data.projectId });
+    expect(project).not.toBeNull();
+    expect(project).toHaveProperty("id", data.projectId);
+    expect(project).toHaveProperty("name");
+    expect(project).toHaveProperty("start_date");
+    expect(project).toHaveProperty("final_date");
+    expect(project).toHaveProperty("manager_id");
+    expect(project).toHaveProperty("client_id");
+    expect(project).toHaveProperty("sprint_count", 0);
+    expect(project).toHaveProperty("tasks");
+    expect(project.tasks).toHaveLength(0);
+  });
+  test("db.getProjects() must return an array of projects", async () => {
+    const projects = await db.getProjects({
+      personId: data.clientPersonId,
+      page: 0,
+    });
+    expect(Array.isArray(projects)).toBe(true);
+    expect(projects.length >= 1).toBe(true);
+
+    projects.forEach((project) => {
+      expect(project).toHaveProperty("name");
+      expect(project).toHaveProperty("final_date");
+      expect(project).toHaveProperty("start_date");
+      expect(project).toHaveProperty("client_id");
+      expect(project).toHaveProperty("manager_id");
+      expect(project).toHaveProperty("person_id");
+      expect(project).toHaveProperty("role");
+    });
+  });
 });

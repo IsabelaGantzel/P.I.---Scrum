@@ -31,11 +31,7 @@ app.post(
 );
 
 app.get("/api/projects", authorize, projects.index);
-
-app.get("/api/projects/:projectId", authorize, async (req, res) => {
-  res.json({ message: "OK" });
-});
-
+app.get("/api/projects/:projectId", authorize, projects.show);
 app.post(
   "/api/projects",
   authorize,
