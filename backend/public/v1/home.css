@@ -159,7 +159,8 @@ button {
   text-decoration: underline;
 }
 
-.project-list .project-sprint {
+.project-list .project-sprint,
+.project-list .project-role {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -173,7 +174,20 @@ button {
   font-weight: 600;
   color: #fff;
 
-  background-color: #1670e6;
+  background-color: #757575;
+}
+
+.project-list .project-sprint {
+  background-color: #1e88e5;
+}
+.project-list .project-role.dev {
+  background-color: #8e24aa;
+}
+.project-list .project-role.manager {
+  background-color: #00acc1;
+}
+.project-list .project-role.client {
+  background-color: #43a047;
 }
 
 .project-list .project-end-at span {

@@ -60,21 +60,21 @@
             <div class="project-container">
               <div class="project-icon"></div>
               <div class="project-name">Cliente</div>
-              <div class="project-measures">3 projetos</div>
+              <div class="project-measures"><span x-text="projectsMap.client.length"></span> projetos</div>
             </div>
           </div>
           <div class="project">
             <div class="project-container">
               <div class="project-icon"></div>
               <div class="project-name">Desenvolvedor</div>
-              <div class="project-measures">2 projetos</div>
+              <div class="project-measures"><span x-text="projectsMap.dev.length"></span> projetos</div>
             </div>
           </div>
           <div class="project">
             <div class="project-container">
               <div class="project-icon"></div>
               <div class="project-name">Gerente</div>
-              <div class="project-measures">1 projetos</div>
+              <div class="project-measures"><span x-text="projectsMap.manager.length"></span> projetos</div>
             </div>
           </div>
         </div>
@@ -94,6 +94,7 @@
                 <div class="project-name">
                   <span x-text="project.title"></span>
                   <div class="project-sprint" x-text="project.sprint"></div>
+                  <div class="project-role" :class="project.role" x-text="project.roleText"></div>
                 </div>
                 <div class="project-end-at">
                   <span>Data do fim da sprint:</span>
@@ -116,8 +117,18 @@
 
   <script>
     function pageData() {
+      const ROLES_MAP = {
+        manager: "Gerente",
+        dev: "Desenvolvedor",
+        client: "Cliente"
+      };
       return {
         tab: 'main',
+        projectsMap: {
+          manager: [],
+          client: [],
+          dev: []
+        },
         projects: [],
         async onInit() {
           const token = storage.token.get();
@@ -125,25 +136,22 @@
             navigation.goToError();
           } else {
             api.setToken(token);
-            const projects = await api.projects();
-            console.log({ projects });
+            const response = await api.projects();
+            const projects = response.result;
 
-            this.projects = [
-              {
-                id: 0,
-                title: "Projeto Integrador",
+            this.projects = projects.map(p => {
+              this.projectsMap[p.role].push(p.id);
+
+              return {
+                id: p.id,
+                title: p.name,
                 sprint: "1 sprint",
                 final_date: "25/12/2021",
-                url: "project.html?id=0"
-              },
-              {
-                id: 1,
-                title: "Mineração de Repositórios",
-                sprint: "2 sprint",
-                final_date: "25/12/2021",
-                url: "project.html?id=0"
-              },
-            ];
+                url: "project.html?id=" + p.id,
+                role: p.role,
+                roleText: ROLES_MAP[p.role]
+              };
+            });
           }
         },
         onExitClick() {
