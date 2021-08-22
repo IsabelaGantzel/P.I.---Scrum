@@ -6,8 +6,7 @@ async function authorize(req, res, next) {
   if (bearerToken && bearerToken.startsWith(BEARER)) {
     try {
       const token = bearerToken.slice(BEARER.length);
-      if (!req.data) req.data = {};
-      req.data.token = await jwtManager.readToken(token);
+      req.locals.token = await jwtManager.readToken(token);
       next();
     } catch (err) {
       if (err.name === "TokenExpiredError") {

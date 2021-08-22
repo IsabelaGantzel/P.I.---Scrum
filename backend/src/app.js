@@ -6,6 +6,7 @@ require("express-async-errors");
 
 const validate = require("./middlewares/validate");
 const authorize = require("./middlewares/authorize");
+const locals = require("./middlewares/locals");
 
 const auth = require("./controllers/auth");
 const projects = require("./controllers/projects");
@@ -14,6 +15,7 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use(locals);
 
 app.use(express.static(path.join(__dirname, "..", "public")));
 
