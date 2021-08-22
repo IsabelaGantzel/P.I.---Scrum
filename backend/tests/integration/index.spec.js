@@ -14,7 +14,7 @@ describe("Api", () => {
     test("Must fail if body as incorrect (missing body)", async () => {
       const res = await request(app)
         .post("/api/auth/login")
-        .expect("Content-Type", /json/);
+        .expect("content-type", /json/);
 
       expect(res.body).toHaveProperty("error");
       expect(res.body.error).toHaveLength(2);
@@ -23,7 +23,7 @@ describe("Api", () => {
       const res = await request(app)
         .post("/api/auth/login")
         .send({ userName: "admin" })
-        .expect("Content-Type", /json/);
+        .expect("content-type", /json/);
 
       expect(res.body).toHaveProperty("error");
       expect(res.body.error).toHaveLength(1);
@@ -32,7 +32,7 @@ describe("Api", () => {
       const res = await request(app)
         .post("/api/auth/login")
         .send({ userName: "anyone", password: "invalid-password" })
-        .expect("Content-Type", /json/);
+        .expect("content-type", /json/);
 
       expect(res.body).toHaveProperty("error");
     });
@@ -41,7 +41,7 @@ describe("Api", () => {
       const res = await request(app)
         .post("/api/auth/login")
         .send({ userName: "admin", password: "invalid-password" })
-        .expect("Content-Type", /json/);
+        .expect("content-type", /json/);
 
       expect(res.body).toHaveProperty("error");
     });
@@ -50,7 +50,7 @@ describe("Api", () => {
       const res = await request(app)
         .post("/api/auth/login")
         .send({ userName: "admin", password: "valid-password" })
-        .expect("Content-Type", /json/);
+        .expect("content-type", /json/);
 
       expect(res.body).toHaveProperty("message");
       expect(res.body).toHaveProperty("token");
@@ -62,7 +62,7 @@ describe("Api", () => {
     test(`Must return error if not authorized (${authCount++})`, async () => {
       const res = await request(app)
         [method](route)
-        .expect("Content-Type", /json/);
+        .expect("content-type", /json/);
 
       expect(res.body).toHaveProperty("error");
       expect(res.body.error).toBe("Missing authorization token");

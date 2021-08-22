@@ -2,10 +2,11 @@ const jwtManager = require("../services/jwtManager");
 
 const BEARER = "Bearer ";
 async function authorize(req, res, next) {
-  const bearerToken = req.headers["Authorization"];
+  const bearerToken = req.headers.authorization;
   if (bearerToken && bearerToken.startsWith(BEARER)) {
     try {
       const token = bearerToken.slice(BEARER.length);
+      if (!req.data) req.data = {};
       req.data.token = await jwtManager.readToken(token);
       next();
     } catch (err) {
