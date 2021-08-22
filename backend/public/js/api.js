@@ -1,7 +1,7 @@
 const api = (() => {
   let token = null;
   function getAuthorization() {
-    return this._token ? { Authorization: this._token } : {};
+    return token ? { authorization: token } : {};
   }
   function post(url, { body, headers = {}, ...opts }) {
     return fetch(url, {
@@ -15,14 +15,23 @@ const api = (() => {
       body: body !== undefined ? JSON.stringify(body) : body,
     }).then((res) => res.json());
   }
-  function get(url, opts = {}) {
-    return fetch(url, opts).then((res) => res.json());
+  function get(url, { headers = {}, ...opts } = {}) {
+    return fetch(url, {
+      ...opts,
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        ...getAuthorization(),
+        ...headers,
+      },
+    }).then((res) => res.json());
   }
-  function setToken(token) {
-    token = `Bearer ${token}`;
+  function setToken(newToken) {
+    token = `Bearer ${newToken}`;
   }
 
   return {
+    setToken,
     clearToken() {
       token = null;
     },
