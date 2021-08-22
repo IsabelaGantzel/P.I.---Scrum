@@ -58,7 +58,6 @@ describe("Api", () => {
     });
   });
 
-  let authCount = 0;
   function authRequired(route, method = "get") {
     test(`${method.toUpperCase()} ${route} must fail if not authenticated`, async () => {
       const res = await request(app)
@@ -79,12 +78,43 @@ describe("Api", () => {
   describe("GET /api/projects", () => {
     test("Must return a list of projects", async () => {
       jest.spyOn(jwtManager, "readToken").mockReturnValueOnce({ personId: 1 });
+      jest
+        .spyOn(db, "getProjects")
+        .mockResolvedValueOnce([{ id: 0, name: "mock" }]);
       const res = await request(app)
         .get("/api/projects")
         .set("authorization", "Bearer fake-token")
         .expect("content-type", /json/);
 
       expect(res.body).toHaveProperty("result");
+      expect(res.body.result).toHaveLength(1);
+    });
+  });
+  describe("POST /api/projects", () => {
+    test("Must return the project infos", async () => {
+      jest.spyOn(jwtManager, "readToken").mockReturnValueOnce({ personId: 1 });
+      jest.spyOn(db, "getClient").mockResolvedValueOnce(0);
+      jest.spyOn(db, "getManager").mockResolvedValueOnce(0);
+      jest.spyOn(db, "insertDevs").mockResolvedValueOnce([0]);
+      jest.spyOn(db, "insertProject").mockResolvedValueOnce([0]);
+      const res = await request(app)
+        .post("/api/projects")
+        .send({
+          projectName: "project test",
+          managerId: 0,
+          clientId: 0,
+          devIds: [0],
+        })
+        .set("authorization", "Bearer fake-token")
+        .expect("content-type", /json/);
+
+      expect(res.body).toHaveProperty("id", 0);
+      expect(res.body).toHaveProperty("name", "project test");
+      expect(res.body).toHaveProperty("start_date");
+      expect(res.body).toHaveProperty("final_date");
+      expect(res.body).toHaveProperty("manager_id", 0);
+      expect(res.body).toHaveProperty("client_id", 0);
+      expect(res.body).toHaveProperty("devs", [0]);
     });
   });
 });
