@@ -30,9 +30,7 @@ app.post(
   auth.login
 );
 
-app.get("/api/projects", authorize, async (req, res) => {
-  res.json({ result: [] });
-});
+app.get("/api/projects", authorize, projects.index);
 
 app.get("/api/projects/:projectId", authorize, async (req, res) => {
   res.json({ message: "OK" });

@@ -29,4 +29,10 @@ module.exports = {
       devs,
     });
   },
+  async index(req, res) {
+    const { personId } = req.locals.token;
+    const { page = 0 } = req.params;
+    const projects = await db.getProjects({ personId, page });
+    res.json({ result: projects });
+  },
 };
