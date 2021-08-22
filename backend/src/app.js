@@ -29,7 +29,7 @@ app.post(
 );
 
 app.get("/api/projects", authorize, async (req, res) => {
-  res.json({ message: "OK" });
+  res.json({ result: [] });
 });
 
 app.get("/api/projects/:projectId", authorize, async (req, res) => {

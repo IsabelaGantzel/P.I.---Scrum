@@ -4,6 +4,7 @@ const app = require("../../src/app");
 const request = require("supertest");
 const db = require("../../src/database");
 const passwordManager = require("../../src/services/passwordManager");
+const jwtManager = require("../../src/services/jwtManager");
 
 describe("Api", () => {
   afterAll(() => {
@@ -59,7 +60,7 @@ describe("Api", () => {
 
   let authCount = 0;
   function authRequired(route, method = "get") {
-    test(`Must return error if not authorized (${authCount++})`, async () => {
+    test(`${method.toUpperCase()} ${route} must fail if not authenticated`, async () => {
       const res = await request(app)
         [method](route)
         .expect("content-type", /json/);
@@ -69,13 +70,21 @@ describe("Api", () => {
     });
   }
 
-  describe("POST /api/projects", () => {
+  describe("Routes must be authenticated", () => {
     authRequired("/api/projects", "post");
-  });
-  describe("GET /api/projects", () => {
     authRequired("/api/projects");
-  });
-  describe("GET /api/projects/1", () => {
     authRequired("/api/projects/1");
+  });
+
+  describe("GET /api/projects", () => {
+    test("Must return a list of projects", async () => {
+      jest.spyOn(jwtManager, "readToken").mockReturnValueOnce({ personId: 1 });
+      const res = await request(app)
+        .get("/api/projects")
+        .set("authorization", "Bearer fake-token")
+        .expect("content-type", /json/);
+
+      expect(res.body).toHaveProperty("result");
+    });
   });
 });
