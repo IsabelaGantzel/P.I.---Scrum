@@ -4,28 +4,24 @@ const db = require("../database");
 
 module.exports = {
   async login(req, res) {
-    try {
-      const person = await db.getPersonByName(req.body.userName);
-      if (!person) {
-        res.status(404).json({ error: "Person not found" });
-      } else {
-        const passwordCorrect = await passwordManager.checkPassword(
-          req.body.password,
-          person.password
-        );
+    const person = await db.getPersonByName(req.body.userName);
+    if (!person) {
+      res.status(404).json({ error: "Person not found" });
+    } else {
+      const passwordCorrect = await passwordManager.checkPassword(
+        req.body.password,
+        person.password
+      );
 
-        if (!passwordCorrect) {
-          res.status(400).json({ error: "User or password invalid" });
-        } else {
-          const token = jwtManager.generateToken({ personId: person.id });
-          res.json({
-            token,
-            message: "Login success!",
-          });
-        }
+      if (!passwordCorrect) {
+        res.status(400).json({ error: "User or password invalid" });
+      } else {
+        const token = jwtManager.generateToken({ personId: person.id });
+        res.json({
+          token,
+          message: "Login success!",
+        });
       }
-    } catch (err) {
-      console.log(err);
     }
   },
 };
