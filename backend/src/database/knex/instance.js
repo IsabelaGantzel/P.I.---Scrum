@@ -33,5 +33,13 @@ module.exports = (query) => {
       });
       return managerId;
     },
+    async getPersonByName(userName) {
+      const [person] = await query("persons")
+        .where("user", userName)
+        .limit(1)
+        .select();
+      if (!person) return null;
+      return person;
+    },
   };
 };

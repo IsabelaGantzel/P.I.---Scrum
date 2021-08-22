@@ -1,15 +1,29 @@
 const jwtManager = require("../services/jwtManager");
-const mockPersonId = 1231231;
+const passwordManager = require("../services/passwordManager");
+const db = require("../database");
 
 module.exports = {
   async login(req, res) {
     try {
-      // const person = await getPersonByName(req.body.userName);
-      const token = jwtManager.generateToken({ personId: mockPersonId });
-      res.json({
-        token,
-        message: "Login success!",
-      });
+      const person = await db.getPersonByName(req.body.userName);
+      if (!person) {
+        res.status(404).json({ error: "Person not found" });
+      } else {
+        const passwordCorrect = await passwordManager.checkPassword(
+          req.body.password,
+          person.password
+        );
+
+        if (!passwordCorrect) {
+          res.status(400).json({ error: "User or password invalid" });
+        } else {
+          const token = jwtManager.generateToken({ personId: person.id });
+          res.json({
+            token,
+            message: "Login success!",
+          });
+        }
+      }
     } catch (err) {
       console.log(err);
     }
