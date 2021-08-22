@@ -18,7 +18,8 @@ describe("Api", () => {
         .expect("content-type", /json/);
 
       expect(res.body).toHaveProperty("error");
-      expect(res.body.error).toHaveLength(2);
+      expect(res.body).toHaveProperty("errors");
+      expect(res.body.errors).toHaveLength(2);
     });
     test("Must fail if body as incorrect (missing password)", async () => {
       const res = await request(app)
@@ -27,7 +28,8 @@ describe("Api", () => {
         .expect("content-type", /json/);
 
       expect(res.body).toHaveProperty("error");
-      expect(res.body.error).toHaveLength(1);
+      expect(res.body).toHaveProperty("errors");
+      expect(res.body.errors).toHaveLength(1);
     });
     test("Must fail if body as invalid (invalid userName)", async () => {
       const res = await request(app)
