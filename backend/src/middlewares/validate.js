@@ -4,7 +4,7 @@
  * @param schema Joi Schema
  * @returns
  */
-function validateRequest(schema, picker = (req) => req.body) {
+function validate(schema, picker = (req) => req.body) {
   return (req, res, next) => {
     const options = {
       abortEarly: false, // include all errors
@@ -25,4 +25,4 @@ function validateRequest(schema, picker = (req) => req.body) {
   };
 }
 
-module.exports = validateRequest;
+module.exports = validate;

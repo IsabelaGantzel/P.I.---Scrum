@@ -4,7 +4,7 @@ const Joi = require("joi");
 const path = require("path");
 require("express-async-errors");
 
-const validateRequest = require("./validateRequest");
+const validate = require("./middlewares/validate");
 const jwtManager = require("./services/jwtManager");
 
 const auth = require("./controllers/auth");
@@ -28,7 +28,7 @@ function extractToken(req) {
 
 app.post(
   "/api/auth/login",
-  validateRequest(
+  validate(
     Joi.object({
       userName: Joi.string().required(),
       password: Joi.string().required(),
@@ -49,7 +49,7 @@ app.get("/api/projects/:projectId", (req, res) => {
 
 app.post(
   "/api/projects",
-  validateRequest(
+  validate(
     Joi.object({
       projectName: Joi.string().required(),
       managerId: Joi.number().required(),
