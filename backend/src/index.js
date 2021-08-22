@@ -5,7 +5,7 @@ const path = require("path");
 require("express-async-errors");
 
 const validate = require("./middlewares/validate");
-const jwtManager = require("./services/jwtManager");
+const authorize = require("./middlewares/authorize");
 
 const auth = require("./controllers/auth");
 const projects = require("./controllers/projects");
@@ -16,15 +16,6 @@ app.use(cors());
 app.use(express.json());
 
 app.use(express.static(path.join(__dirname, "..", "public")));
-
-function extractToken(req) {
-  const BEARER = "Bearer ";
-  const bearerToken = req.headers["Authorization"];
-  if (bearerToken && bearerToken.startsWith(BEARER)) {
-    return jwtManager.readToken(bearerToken.slice(BEARER.length));
-  }
-  return null;
-}
 
 app.post(
   "/api/auth/login",
@@ -37,18 +28,17 @@ app.post(
   auth.login
 );
 
-app.get("/api/projects", async (req, res) => {
-  const token = await extractToken(req);
-  console.log(token);
-  res.json({ HERE: "2" });
+app.get("/api/projects", authorize, async (req, res) => {
+  res.json({ message: "OK" });
 });
 
-app.get("/api/projects/:projectId", (req, res) => {
+app.get("/api/projects/:projectId", authorize, async (req, res) => {
   res.json({ message: "OK" });
 });
 
 app.post(
   "/api/projects",
+  authorize,
   validate(
     Joi.object({
       projectName: Joi.string().required(),
