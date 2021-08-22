@@ -11,6 +11,22 @@ button {
   cursor: pointer;
 }
 
+.exit-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  color: white;
+  font-weight: 600;
+
+  background-color: #ff1744;
+  border-radius: 4px;
+
+  text-decoration: none;
+  padding: 6px 16px;
+  margin: 4px;
+}
+
 .page {
   background-color: #eff2f7;
   height: 100vh;
