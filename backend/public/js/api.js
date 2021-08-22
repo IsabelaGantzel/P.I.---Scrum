@@ -40,7 +40,9 @@ const api = (() => {
       const res = await post("/api/auth/login", {
         body: { userName, password },
       });
-      setToken(res.token);
+      if (res.token) {
+        setToken(res.token);
+      }
       return res;
     },
     async projects() {

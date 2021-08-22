@@ -79,6 +79,15 @@
             }
 
             const data = await api.login({ userName, password });
+            if (data.error) {
+              if (data.error === "Person not found") {
+                this.error = "Usuário não encontrado!"
+              } else if (data.error === "User or password invalid") {
+                this.error = "Usuário ou senha inválidos!"
+              }
+
+              return;
+            }
             storage.token.set(data.token);
 
             document.body.style.opacity = "0";

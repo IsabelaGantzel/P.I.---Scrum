@@ -24,6 +24,7 @@ body {
   transform: translate(-50%, -50%);
   background: #ffffff;
   text-align: center;
+  border-radius: 8px;
 }
 .login-container h1 {
   color: #313131;
