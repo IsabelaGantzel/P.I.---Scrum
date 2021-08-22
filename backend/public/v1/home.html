@@ -119,24 +119,32 @@
       return {
         tab: 'main',
         projects: [],
-        onInit() {
-          this.projects = [
-            {
-              id: 0,
-              title: "Projeto Integrador",
-              sprint: "1 sprint",
-              final_date: "25/12/2021",
-              url: "project.html?id=0"
-            },
-            {
-              id: 1,
-              title: "Mineração de Repositórios",
-              sprint: "2 sprint",
-              final_date: "25/12/2021",
-              url: "project.html?id=0"
-            },
-          ];
-          document.body.style.opacity = "1";
+        async onInit() {
+          const token = storage.token.get();
+          if (!token) {
+            navigation.goToError();
+          } else {
+            api.setToken(token);
+            const projects = await api.projects();
+            console.log({ projects });
+
+            this.projects = [
+              {
+                id: 0,
+                title: "Projeto Integrador",
+                sprint: "1 sprint",
+                final_date: "25/12/2021",
+                url: "project.html?id=0"
+              },
+              {
+                id: 1,
+                title: "Mineração de Repositórios",
+                sprint: "2 sprint",
+                final_date: "25/12/2021",
+                url: "project.html?id=0"
+              },
+            ];
+          }
         },
         onExitClick() {
           storage.clearAll();
