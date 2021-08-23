@@ -81,6 +81,7 @@ describe("Knex Database", () => {
     projectId: 0,
     managerId: 0,
     clientId: 0,
+    taskId: 0,
   };
   beforeAll(async () => {
     const [clientPersonId] = await db.query("persons").insert({
@@ -104,6 +105,12 @@ describe("Knex Database", () => {
       manager_id: managerId,
       client_id: clientId,
     });
+    const [taskId] = await db.query("tasks").insert({
+      title: "test",
+      description: "desc",
+      points: 100,
+      project_id: projectId,
+    });
 
     data = {
       clientPersonId,
@@ -111,6 +118,7 @@ describe("Knex Database", () => {
       projectId,
       managerId,
       clientId,
+      taskId,
     };
   });
 
@@ -205,6 +213,22 @@ describe("Knex Database", () => {
       expect(project).toHaveProperty("person_id");
       expect(project).toHaveProperty("role");
       expect(project).toHaveProperty("sprint_count", 0);
+    });
+  });
+  test("db.getTasks() must return an array of tasks", async () => {
+    const tasks = await db.getTasks({ projectId: data.projectId, page: 0 });
+    expect(Array.isArray(tasks)).toBe(true);
+    expect(tasks.length >= 1).toBe(true);
+
+    tasks.forEach((task) => {
+      expect(task).toHaveProperty("title");
+      expect(task).toHaveProperty("description");
+      expect(task).toHaveProperty("points");
+      expect(task).toHaveProperty("project_id");
+      expect(task).toHaveProperty("stage");
+      expect(task).toHaveProperty("start_date");
+      expect(task).toHaveProperty("final_date");
+      expect(task).toHaveProperty("is_open");
     });
   });
 });

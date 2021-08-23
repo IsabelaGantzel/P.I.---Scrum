@@ -10,6 +10,7 @@ const locals = require("./middlewares/locals");
 
 const auth = require("./controllers/auth");
 const projects = require("./controllers/projects");
+const tasks = require("./controllers/tasks");
 
 const app = express();
 
@@ -32,6 +33,7 @@ app.post(
 
 app.get("/api/projects", authorize, projects.index);
 app.get("/api/projects/:projectId", authorize, projects.show);
+app.get("/api/projects/:projectId/tasks", authorize, tasks.index);
 app.post(
   "/api/projects",
   authorize,

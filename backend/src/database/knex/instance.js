@@ -100,5 +100,31 @@ module.exports = (query) => {
         return null;
       }
     },
+    async getProjectById({ projectId }) {
+      const [project] = await query
+        .select()
+        .from({ p: "person_projects" })
+        .where("p.id", projectId)
+        .limit(1);
+      return project;
+    },
+    async getTasks({ projectId, page }) {
+      const passedDate = "s.final_date < CURRENT_TIMESTAMP";
+      const tasks = await query
+        .select("t.*", "s.*", query.raw("sg.name as stage"))
+        .from({ t: "tasks" })
+        .leftJoin({ st: "sprint_tasks" }, "t.id", "=", "st.task_id")
+        .leftJoin({ s: "sprints" }, "s.id", "=", "st.sprint_id")
+        .leftJoin({ sg: "stages" }, "sg.id", "=", "st.stage_id")
+        .where("t.project_id", projectId)
+        .andWhere(function withOutSprint() {
+          this.whereNull("s.is_open").orWhere(function withOutSprintX() {
+            this.where("s.is_open", false).andWhereRaw(passedDate);
+          });
+        })
+        .offset(25 * page)
+        .limit(25);
+      return tasks;
+    },
   };
 };
