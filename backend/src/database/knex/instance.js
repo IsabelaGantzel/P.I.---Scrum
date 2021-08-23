@@ -45,24 +45,10 @@ module.exports = (query) => {
       return person;
     },
     async getProjects({ personId, page }) {
-      const rawRole = (role) => query.raw('"' + role + '" as `role`');
       const projects = await query
-        .select("p.*", "m.person_id", rawRole("manager"))
-        .from({ p: "projects", m: "managers" })
-        .where("m.person_id", personId)
-        .andWhereRaw("p.manager_id = m.id")
-        .union(function unionClient() {
-          this.select("p.*", "c.person_id", rawRole("client"))
-            .from({ p: "projects", c: "clients" })
-            .where("c.person_id", personId)
-            .andWhereRaw("p.client_id = c.id");
-        })
-        .union(function unionDev() {
-          this.select("p.*", "d.person_id", rawRole("dev"))
-            .from({ p: "projects", d: "devs" })
-            .where("d.person_id", personId)
-            .andWhereRaw("p.id = d.project_id");
-        })
+        .select("p.*")
+        .from({ p: "person_projects" })
+        .where("p.person_id", personId)
         .offset(page * 25)
         .limit(25);
       return projects;
