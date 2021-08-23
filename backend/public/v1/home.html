@@ -23,6 +23,7 @@
   <script src="../js/alpinev2.8.2.min.js" defer></script>
   <script src="../js/api.js"></script>
   <script src="../js/storage.js"></script>
+  <script src="../js/date-fmt.js"></script>
   <script src="../js/navigation.js"></script>
 </head>
 
@@ -93,12 +94,15 @@
               <div class="project-container">
                 <div class="project-name">
                   <span x-text="project.title"></span>
-                  <div class="project-sprint" x-text="project.sprint"></div>
+                  <div x-show="project.sprint" class="project-sprint" x-text="project.sprint"></div>
                   <div class="project-role" :class="project.role" x-text="project.roleText"></div>
                 </div>
-                <div class="project-end-at">
+                <div x-show="project.finalDate" class="project-end-at">
                   <span>Data do fim da sprint:</span>
-                  <div x-text="project.final_date"></div>
+                  <div x-text="project.finalDate"></div>
+                </div>
+                <div x-show="!project.finalDate" class="project-end-at">
+                  <span>Sem sprints</span>
                 </div>
               </div>
               <div class="see-project">
@@ -145,8 +149,8 @@
               return {
                 id: p.id,
                 title: p.name,
-                sprint: "1 sprint",
-                final_date: "25/12/2021",
+                sprint: p.sprint_count ? p.sprint_count + " sprint" : null,
+                finalDate: dateFmt.fullDate(p.sprint_final_date),
                 url: "project.html?id=" + p.id,
                 role: p.role,
                 roleText: ROLES_MAP[p.role]

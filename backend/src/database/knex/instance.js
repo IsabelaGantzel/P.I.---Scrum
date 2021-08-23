@@ -49,7 +49,7 @@ module.exports = (query) => {
         "SUM(case when s.id is null then 0 else 1 end) as sprint_count"
       );
       const projects = await query
-        .select("p.*", rawSum)
+        .select("p.*", "s.final_date as sprint_final_date", rawSum)
         .from({ p: "person_projects" })
         .leftJoin({ t: "tasks" }, "t.project_id", "=", "p.id")
         .leftJoin({ st: "sprint_tasks" }, "st.task_id", "=", "t.id")
