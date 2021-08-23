@@ -71,7 +71,7 @@ describe("Knex Database", () => {
   });
   afterAll(async () => {
     await knex.dropInstance();
-  });
+  }, 10000);
 
   const DAYS = 3600;
   let id = 10;
@@ -204,6 +204,7 @@ describe("Knex Database", () => {
       expect(project).toHaveProperty("manager_id");
       expect(project).toHaveProperty("person_id");
       expect(project).toHaveProperty("role");
+      expect(project).toHaveProperty("sprint_count", 0);
     });
   });
 });

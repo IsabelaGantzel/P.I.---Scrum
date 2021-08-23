@@ -50,6 +50,7 @@ describe("Api", () => {
     });
     test("Must works if body was correct", async () => {
       jest.spyOn(passwordManager, "checkPassword").mockResolvedValue(true);
+      jest.spyOn(db, "getPersonByName").mockResolvedValue({ id: 0 });
       const res = await request(app)
         .post("/api/auth/login")
         .send({ userName: "admin", password: "valid-password" })
