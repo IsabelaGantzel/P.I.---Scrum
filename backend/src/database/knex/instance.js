@@ -73,7 +73,7 @@ module.exports = (query) => {
     async getProject({ projectId }) {
       const [project] = await query
         .select()
-        .from("projects")
+        .from("person_projects")
         .where("id", projectId);
       if (project) {
         const tasks = await query
