@@ -59,5 +59,9 @@ const api = (() => {
         body: { projectName, managerId, clientId, devIds },
       });
     },
+    async tasks(projectId) {
+      if (!token) throw new Error("Token missing");
+      return await get(`/api/projects/${projectId}/tasks`);
+    },
   };
 })();

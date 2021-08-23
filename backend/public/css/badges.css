@@ -1,0 +1,16 @@
+.badges {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  height: 20px;
+  padding: 0 8px;
+
+  border-radius: 8px;
+
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+
+  background-color: #757575;
+}

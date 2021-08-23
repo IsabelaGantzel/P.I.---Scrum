@@ -18,7 +18,12 @@
 
   <link rel="stylesheet" href="../css/fonts.css">
   <link rel="stylesheet" href="../css/reset.css">
+  <link rel="stylesheet" href="../css/badges.css">
   <link rel="stylesheet" href="project.css">
+
+  <script src="../js/api.js"></script>
+  <script src="../js/storage.js"></script>
+  <script src="../js/navigation.js"></script>
   <script src="../js/alpinev2.8.2.min.js" defer></script>
 </head>
 
@@ -80,20 +85,28 @@
       <div class="content-container">
         <div class="content-header">
           <h2>Lista de tarefas</h2>
-          <button class="btn-opacity"><span>+</span>Nova tarefa</button>
+          <button x-show="tasksSelectedCount === 0" class="btn-opacity" @click="onClickCreateTask()">
+            <span>+</span>Nova tarefa
+          </button>
+          <button x-show="tasksSelectedCount > 0" class="btn-opacity sprint-add" @click="onClickAddTasksToSprint()">
+            <span>+</span>Adicionar tarefas a sprint
+          </button>
+        </div>
+        <div x-show="otherTasks.length > 0" x-text="tasksSelectedInfo" class="tasks-selected-info">
         </div>
         <div class="task-list">
           <template x-for="task in otherTasks" :key="task.id">
-            <div class="task">
+            <div class="task" :class="{ 'selected': task.selected }" @click="onSelectTask(task)">
               <div class="task-container">
                 <div class="task-name">
                   <span x-text="task.title"></span>
+                  <div x-show="task.points" class="badges task-points" x-text="task.pointsText"></div>
                 </div>
               </div>
             </div>
           </template>
-          <div x-show="otherTasks.length === 0">
-            Sem tarefas criadas para este projeto.
+          <div class="none-tasks-message" x-show="otherTasks.length === 0">
+            Não existem tarefas para este projeto.
           </div>
         </div>
       </div>
@@ -107,56 +120,69 @@
 
   <script>
     function pageData() {
+      const tasksSelectedInfo = "0 tarefas(s) selecionadas - 0 pontos totais"
       return {
-        tab: 'main',
+        tab: 'tasks',
+        tasksSelectedInfo,
+        tasksSelectedCount: 0,
+        totalPoints: 0,
         stages: [
-          { name: "started", title: "🟣 Início", info: "2 itens - 40 pontos", tasks: [], next: "doing", prev: null },
-          { name: "doing", title: "🟠 Em progresso", info: "1 itens - 20 pontos", tasks: [], next: "testing", prev: "started" },
+          { name: "started", title: "🟣 Início", info: "0 itens - 0 pontos", tasks: [], next: "doing", prev: null },
+          { name: "doing", title: "🟠 Em progresso", info: "0 itens - 0 pontos", tasks: [], next: "testing", prev: "started" },
           { name: "testing", title: "🟡 Teste", info: "0 itens - 0 pontos", tasks: [], next: "reviewing", prev: "doing" },
           { name: "reviewing", title: "🔵 Revisão", info: "0 itens - 0 pontos", tasks: [], next: "complete", prev: "testing" },
-          { name: "complete", title: "🟢 Completo", info: "1 itens - 20 pontos", tasks: [], next: null, prev: "reviewing" },
+          { name: "complete", title: "🟢 Completo", info: "0 itens - 0 pontos", tasks: [], next: null, prev: "reviewing" },
         ],
         otherTasks: [],
         tasks: {},
         _fillTasks(tasks) {
+          const stageInfos = {};
           for (const task of tasks) {
             const stage = this.stages.find(s => s.name === task.stage);
             if (stage) {
+              if (!stageInfos[stage]) {
+                stageInfos[stage] = {
+                  tasksCount: 0,
+                  pointsCount: 0
+                };
+              }
+              stageInfos[stage].tasksCount++;
+              stageInfos[stage].pointsCount += task.points;
+
               this.tasks[task.id] = task;
               stage.tasks.push(task.id);
             }
           }
-        },
-        onInit() {
-          let id = 0;
-          const tasks = [
-            ...Array.from({ length: 2 }, () => ({
-              id: id++,
-              title: "Projeto Integrador " + id,
-              points: "(20)",
-              stage: "started"
-            })),
-            ...Array.from({ length: 1 }, () => ({
-              id: id++,
-              title: "Projeto Integrador " + id,
-              points: "(20)",
-              stage: "doing"
-            })),
-            ...Array.from({ length: 3 }, () => ({
-              id: id++,
-              title: "Projeto Integrador " + id,
-              points: "(20)",
-              stage: "reviewing"
-            })),
-            ...Array.from({ length: 10 }, () => ({
-              id: id++,
-              title: "Projeto Integrador " + id,
-              points: "(20)",
-              stage: "complete"
-            }))
-          ];
 
-          this._fillTasks(tasks);
+          for (const name in stageInfos) {
+            const stage = this.stages.find(s => s.name === name);
+            const infos = stageInfos[name];
+            stage.info = `${infos.tasksCount} itens - ${infos.pointsCount} pontos`;
+          }
+        },
+        async onInit() {
+          const urlParams = new URLSearchParams(window.location.search);
+          const projectId = Number(urlParams.get('id'));
+          const token = storage.token.get();
+
+          if (isNaN(projectId) || !token) {
+            navigation.goToError();
+          } else {
+            api.setToken(token);
+            const response = await api.project(projectId)
+
+            if (response.error) {
+              navigation.goToError();
+            } else {
+              const otherTasks = await api.tasks(projectId);
+              this.otherTasks = otherTasks.map(task => ({
+                ...task,
+                pointsText: `${task.points} pontos`,
+                selected: false
+              }))
+              this._fillTasks(response.tasks);
+            }
+          }
         },
         _updateStage(task, direction) {
           const stages = {};
@@ -186,6 +212,41 @@
           if (taskId in this.tasks) {
             const task = this.tasks[taskId];
             this._updateStage(task, "next");
+          }
+        },
+        _updateTasksSelectedInfo() {
+          if (this.tasksSelectedCount > 0) {
+            this.tasksSelectedInfo = `${this.tasksSelectedCount} tarefa(s) selecionadas - ${this.totalPoints} pontos totais`;
+          } else {
+            this.tasksSelectedInfo = tasksSelectedInfo;
+          }
+        },
+        onSelectTask(task) {
+          if (task.selected) {
+            this.totalPoints -= task.points;
+            this.tasksSelectedCount -= 1;
+          } else {
+            this.totalPoints += task.points;
+            this.tasksSelectedCount += 1;
+          }
+          task.selected = !task.selected;
+          this._updateTasksSelectedInfo()
+        },
+        onClickAddTasksToSprint() {
+          const confirmed = window.confirm(`Você quer adicionar ${this.tasksSelectedCount} tarefas (${this.totalPoints} pontos) para a sprint?`);
+
+          if (confirmed) {
+            const taskIds = this.otherTasks.filter(t => t.selected).map(t => t.id);
+            this.otherTasks = this.otherTasks.filter(t => !taskIds.includes(t.id));
+            this.totalPoints = 0;
+            this.tasksSelectedCount = 0;
+            this._updateTasksSelectedInfo();
+          }
+        },
+        onClickCreateTask() {
+          const confirmed = window.confirm('Você quer criar uma nova tarefa?');
+          if (confirmed) {
+            console.log({ confirmed });
           }
         }
       }

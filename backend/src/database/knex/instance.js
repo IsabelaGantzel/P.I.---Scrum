@@ -111,7 +111,12 @@ module.exports = (query) => {
     async getTasks({ projectId, page }) {
       const passedDate = "s.final_date < CURRENT_TIMESTAMP";
       const tasks = await query
-        .select("t.*", "s.*", query.raw("sg.name as stage"))
+        .select(
+          "t.*",
+          "s.start_date",
+          "s.final_date",
+          query.raw("sg.name as stage")
+        )
         .from({ t: "tasks" })
         .leftJoin({ st: "sprint_tasks" }, "t.id", "=", "st.task_id")
         .leftJoin({ s: "sprints" }, "s.id", "=", "st.sprint_id")
