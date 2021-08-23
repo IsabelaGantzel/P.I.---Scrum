@@ -114,6 +114,56 @@ describe("Api", () => {
       expect(res.body.result).toHaveLength(1);
     });
   });
+  describe("GET /api/projects/{projectId}", () => {
+    const personId = 1;
+    beforeAll(() => {
+      jest.spyOn(jwtManager, "readToken").mockReturnValue({ personId });
+    });
+    afterAll(() => {
+      jest.restoreAllMocks();
+    });
+
+    test("Must return a project", async () => {
+      jest
+        .spyOn(db, "getProject")
+        .mockResolvedValueOnce({ id: 0, person_id: personId });
+
+      const res = await request(app)
+        .get("/api/projects/1")
+        .set("authorization", "Bearer fake-token")
+        .expect("content-type", /json/);
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toHaveProperty("id", 0);
+    });
+    test("Must return a error if not found", async () => {
+      jest.spyOn(db, "getProject").mockResolvedValueOnce(null);
+
+      const res = await request(app)
+        .get("/api/projects/1")
+        .set("authorization", "Bearer fake-token")
+        .expect("content-type", /json/);
+
+      expect(res.statusCode).toBe(404);
+      expect(res.body).toHaveProperty("error", "Project not found");
+    });
+    test("Must return a error if user is not the owner", async () => {
+      jest
+        .spyOn(db, "getProject")
+        .mockResolvedValueOnce({ id: 0, person_id: -1 });
+
+      const res = await request(app)
+        .get("/api/projects/1")
+        .set("authorization", "Bearer fake-token")
+        .expect("content-type", /json/);
+
+      expect(res.statusCode).toBe(401);
+      expect(res.body).toHaveProperty(
+        "error",
+        "Unauthorized access to project"
+      );
+    });
+  });
   describe("POST /api/projects", () => {
     test("Must return the project infos", async () => {
       jest.spyOn(jwtManager, "readToken").mockReturnValueOnce({ personId: 1 });

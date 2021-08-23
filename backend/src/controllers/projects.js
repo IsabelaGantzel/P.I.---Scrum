@@ -39,6 +39,12 @@ module.exports = {
     const { personId } = req.locals.token;
     const { projectId } = req.params;
     const project = await db.getProject({ projectId });
-    res.jsoN(project);
+    if (!project) {
+      res.status(404).json({ error: "Project not found" });
+    } else if (project.person_id === personId) {
+      res.json(project);
+    } else {
+      res.status(401).json({ error: "Unauthorized access to project" });
+    }
   },
 };

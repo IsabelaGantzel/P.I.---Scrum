@@ -71,7 +71,7 @@ describe("Knex Database", () => {
   });
   afterAll(async () => {
     await knex.dropInstance();
-  }, 10000);
+  }, 20000);
 
   const DAYS = 3600;
   let id = 10;
