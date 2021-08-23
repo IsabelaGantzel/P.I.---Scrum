@@ -67,12 +67,12 @@ module.exports = (query) => {
         .where("id", projectId);
       if (project) {
         const tasks = await query
-          .select("t.*", "s.*", query.raw("sg.name as sprint"))
+          .select("t.*", "s.*", query.raw("sg.name as stage"))
           .from({ t: "tasks" })
           .join({ st: "sprint_tasks" }, "t.id", "=", "st.task_id")
           .join({ s: "sprints" }, "s.id", "=", "st.sprint_id")
           .join({ sg: "stages" }, "sg.id", "=", "st.stage_id")
-          .where("project_id", project.id);
+          .where("t.project_id", project.id);
         const [{ count }] = await query
           .count({ count: "sp.id" })
           .from({
