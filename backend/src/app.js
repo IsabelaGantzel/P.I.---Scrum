@@ -2,6 +2,8 @@ const express = require("express");
 const cors = require("cors");
 const Joi = require("joi");
 const path = require("path");
+const morgan = require("morgan");
+
 require("express-async-errors");
 
 const validate = require("./middlewares/validate");
@@ -19,6 +21,9 @@ app.use(express.json());
 app.use(locals);
 
 app.use(express.static(path.join(__dirname, "..", "public")));
+
+// @ts-ignore
+app.use(morgan("combined"));
 
 app.post(
   "/api/auth/login",
