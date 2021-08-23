@@ -31,6 +31,9 @@
         <a class="navbar-btn" :class="{ 'active': tab === 'main' }" @click.prevent="tab = 'main'" href="#">
           Sprint atual
         </a>
+        <a class="navbar-btn" :class="{ 'active': tab === 'tasks' }" @click.prevent="tab = 'tasks'" href="#">
+          Tarefas
+        </a>
         <a class="navbar-btn" :class="{ 'active': tab === 'reports' }" @click.prevent="tab = 'reports'" href="#">
           Relatórios
         </a>
@@ -38,7 +41,7 @@
       <div></div>
     </div>
 
-    <div class="content-mark content" x-show="tab === 'main'">
+    <div class="content-mark content main" x-show="tab === 'main'">
       <div class="content-container">
         <div class="content-header">
           <h2>Sprint atual</h2>
@@ -73,6 +76,29 @@
       </div>
     </div>
 
+    <div class="content-mark content" x-show="tab === 'tasks'">
+      <div class="content-container">
+        <div class="content-header">
+          <h2>Lista de tarefas</h2>
+          <button class="btn-opacity"><span>+</span>Nova tarefa</button>
+        </div>
+        <div class="task-list">
+          <template x-for="task in otherTasks" :key="task.id">
+            <div class="task">
+              <div class="task-container">
+                <div class="task-name">
+                  <span x-text="task.title"></span>
+                </div>
+              </div>
+            </div>
+          </template>
+          <div x-show="otherTasks.length === 0">
+            Sem tarefas criadas para este projeto.
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="content-mark content" x-show="tab === 'reports'">
       <div class="content-container">
       </div>
@@ -90,6 +116,7 @@
           { name: "reviewing", title: "🔵 Revisão", info: "0 itens - 0 pontos", tasks: [], next: "complete", prev: "testing" },
           { name: "complete", title: "🟢 Completo", info: "1 itens - 20 pontos", tasks: [], next: null, prev: "reviewing" },
         ],
+        otherTasks: [],
         tasks: {},
         _fillTasks(tasks) {
           for (const task of tasks) {

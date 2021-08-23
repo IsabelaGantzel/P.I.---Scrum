@@ -54,7 +54,8 @@ button {
   justify-content: center;
 }
 
-.content-container {
+.content:not(.main) .content-container {
+  width: max(60%, 820px);
   padding: 12px 0;
 }
 
