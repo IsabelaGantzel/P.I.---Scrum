@@ -61,21 +61,42 @@ describe("Api", () => {
     });
   });
 
-  function authRequired(route, method = "get") {
-    test(`${method.toUpperCase()} ${route} must fail if not authenticated`, async () => {
+  describe("Authorized routes", () => {
+    test("Must fail if not authenticated", async () => {
       const res = await request(app)
-        [method](route)
+        .get("/api/projects")
         .expect("content-type", /json/);
 
       expect(res.body).toHaveProperty("error");
       expect(res.body.error).toBe("Missing authorization token");
     });
-  }
+    test("Must fail if token was expired", async () => {
+      class NamedError extends Error {
+        constructor(name) {
+          super();
+          this.name = name;
+        }
+      }
+      jest
+        .spyOn(jwtManager, "readToken")
+        .mockRejectedValueOnce(new NamedError("TokenExpiredError"));
 
-  describe("Routes must be authenticated", () => {
-    authRequired("/api/projects", "post");
-    authRequired("/api/projects");
-    authRequired("/api/projects/1");
+      const res = await request(app)
+        .get("/api/projects")
+        .set("authorization", "Bearer fake-token")
+        .expect("content-type", /json/);
+
+      expect(res.body).toHaveProperty("error");
+      expect(res.body.error).toBe("Authorization token expired");
+    });
+    test("Must fail if something bad happens", async () => {
+      jest.spyOn(jwtManager, "readToken").mockRejectedValueOnce(new Error());
+
+      await request(app)
+        .get("/api/projects")
+        .set("authorization", "Bearer fake-token")
+        .expect("content-type", /html/);
+    });
   });
 
   describe("GET /api/projects", () => {
