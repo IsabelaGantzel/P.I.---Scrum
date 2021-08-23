@@ -105,6 +105,21 @@ async function addTasksToSprint({ sprintId, tasks }) {
   return await db.query("sprint_tasks").insert(sprintTasks);
 }
 
+function randInt(start, end) {
+  return Math.floor(Math.random() * end - start) + start;
+}
+let taskIdCount = 1;
+function createTasks(n) {
+  return Array.from({ length: n }, () => {
+    const id = taskIdCount++;
+    return {
+      title: "task " + id,
+      description: "The begin",
+      points: randInt(1, 30),
+    };
+  });
+}
+
 async function run() {
   function getUser(userName) {
     const index = personsData.findIndex((p) => p.user === userName);
@@ -141,23 +156,12 @@ async function run() {
 
     const taskIds = await addTasksToProject({
       projectId,
-      tasks: [
-        {
-          title: "task 3",
-          description: "The begin",
-          points: 23,
-        },
-        {
-          title: "task 4",
-          description: "The begin",
-          points: 10,
-        },
-      ],
+      tasks: createTasks(10),
     });
 
     const sprintId = await getOrCreateSprint({ projectId });
 
-    await addTasksToSprint({ sprintId, tasks: [taskIds[1]] });
+    await addTasksToSprint({ sprintId, tasks: taskIds.slice(5) });
   } else {
     console.log("project 1 already exists");
   }
@@ -172,23 +176,12 @@ async function run() {
 
     const taskIds = await addTasksToProject({
       projectId,
-      tasks: [
-        {
-          title: "task 1",
-          description: "The begin",
-          points: 23,
-        },
-        {
-          title: "task 2",
-          description: "The begin",
-          points: 10,
-        },
-      ],
+      tasks: createTasks(10),
     });
 
     const sprintId = await getOrCreateSprint({ projectId });
 
-    await addTasksToSprint({ sprintId, tasks: [taskIds[0]] });
+    await addTasksToSprint({ sprintId, tasks: taskIds.slice(0, 2) });
   } else {
     console.log("project 2 already exists");
   }
