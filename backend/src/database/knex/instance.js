@@ -45,15 +45,25 @@ module.exports = (query) => {
       return person;
     },
     async getProjects({ personId, page }) {
-      const rawSum = query.raw(
-        "SUM(case when s.id is null then 0 else 1 end) as sprint_count"
-      );
+      const rawSum = query.raw("COUNT(s.sprint_id) as sprint_count");
       const projects = await query
         .select("p.*", "s.final_date as sprint_final_date", rawSum)
         .from({ p: "person_projects" })
-        .leftJoin({ t: "tasks" }, "t.project_id", "=", "p.id")
-        .leftJoin({ st: "sprint_tasks" }, "st.task_id", "=", "t.id")
-        .leftJoin({ s: "sprints" }, "st.sprint_id", "=", "s.id")
+        .leftJoin(
+          query
+            .select(
+              query.raw(
+                "DISTINCT s.id as sprint_id, p2.id as project_id, s.final_date"
+              )
+            )
+            .from({ p2: "projects " })
+            .leftJoin({ t: "tasks" }, "t.project_id", "=", "p2.id")
+            .leftJoin({ st: "sprint_tasks" }, "st.task_id", "=", "t.id")
+            .leftJoin({ s: "sprints" }, "st.sprint_id", "=", "s.id")
+            .as("s"),
+          "s.project_id",
+          "p.id"
+        )
         .where("p.person_id", personId)
         .groupBy("p.id")
         .offset(page * 25)
