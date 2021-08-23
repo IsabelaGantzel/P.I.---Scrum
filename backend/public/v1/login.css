@@ -1,20 +1,3 @@
-.btn-opacity {
-  transition-property: opacity;
-  transition-duration: 0.1s;
-}
-
-.btn-opacity:hover {
-  opacity: 0.9;
-}
-
-button {
-  cursor: pointer;
-}
-
-body {
-  background-color: #eff2f7;
-}
-
 .login-container {
   width: 300px;
   padding: 40px;

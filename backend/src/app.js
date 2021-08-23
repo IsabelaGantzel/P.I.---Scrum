@@ -23,7 +23,7 @@ app.use(locals);
 app.use(express.static(path.join(__dirname, "..", "public")));
 
 // @ts-ignore
-app.use(morgan("combined"));
+app.use("/api", morgan("combined"));
 
 app.post(
   "/api/auth/login",
