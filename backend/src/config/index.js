@@ -1,22 +1,14 @@
 const dotenv = require("dotenv");
 const path = require("path");
+const requireEnvNotNull = require("./requireEnvNotNull");
 
 dotenv.config({
   path: path.join(__dirname, "..", "..", ".env"),
 });
 
-function requireNotNull(name) {
-  const variable = process.env[name];
-  if (variable === null || variable === undefined) {
-    throw new Error(`Environment variable '${name}' can't be null!`);
-  } else {
-    return variable;
-  }
-}
-
 const config = {
-  PORT: requireNotNull("PORT"),
-  ADMIN_PASSWORD: requireNotNull("ADMIN_PASSWORD"),
+  PORT: requireEnvNotNull("PORT"),
+  ADMIN_PASSWORD: requireEnvNotNull("ADMIN_PASSWORD"),
 };
 
 module.exports = config;

@@ -196,6 +196,10 @@ describe("Knex Database", () => {
     expect(project).toHaveProperty("tasks");
     expect(project.tasks).toHaveLength(0);
   });
+  test("db.getProject() must return null if project not exists", async () => {
+    const project = await db.getProject({ projectId: -1 });
+    expect(project).toBeNull();
+  });
   test("db.getProjects() must return an array of projects", async () => {
     const projects = await db.getProjects({
       personId: data.clientPersonId,
@@ -230,5 +234,34 @@ describe("Knex Database", () => {
       expect(task).toHaveProperty("final_date");
       expect(task).toHaveProperty("is_open");
     });
+  });
+
+  test("db.getProjectById() must return a project, but not as db.getProject()", async () => {
+    const project = await db.getProjectById({ projectId: data.projectId });
+    expect(project).not.toBeNull();
+    expect(project).not.toHaveProperty("tasks");
+    expect(project).not.toHaveProperty("sprint_count");
+  });
+  test("db.getPersonByName() must return a person by userName", async () => {
+    const person = await db.getPersonByName("client-0");
+    expect(person).not.toBeNull();
+  });
+  test("db.getPersonByName() must return null if userName was not found", async () => {
+    const project = await db.getPersonByName("undefined-user");
+    expect(project).toBeNull();
+  });
+
+  test("db.insertPerson() must insert a person", async () => {
+    const userName = "test-user";
+    const [personId] = await db.insertPerson({
+      user: userName,
+      password: "1234",
+    });
+    expect(personId).not.toBeNull();
+    expect(typeof personId === "number").toBe(true);
+
+    const person = await db.getPersonByName(userName);
+    expect(person).toHaveProperty("id", personId);
+    expect(person).toHaveProperty("user", userName);
   });
 });

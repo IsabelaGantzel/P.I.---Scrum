@@ -32,6 +32,7 @@ describe("Api", () => {
       expect(res.body.errors).toHaveLength(1);
     });
     test("Must fail if body as invalid (invalid userName)", async () => {
+      jest.spyOn(db, "getPersonByName").mockResolvedValue(null);
       const res = await request(app)
         .post("/api/auth/login")
         .send({ userName: "anyone", password: "invalid-password" })
@@ -41,6 +42,9 @@ describe("Api", () => {
     });
     test("Must fail if body as invalid (invalid password)", async () => {
       jest.spyOn(passwordManager, "checkPassword").mockResolvedValue(false);
+      jest
+        .spyOn(db, "getPersonByName")
+        .mockResolvedValue({ id: 0, password: "other-password" });
       const res = await request(app)
         .post("/api/auth/login")
         .send({ userName: "admin", password: "invalid-password" })
@@ -51,6 +55,9 @@ describe("Api", () => {
     test("Must works if body was correct", async () => {
       jest.spyOn(passwordManager, "checkPassword").mockResolvedValue(true);
       jest.spyOn(db, "getPersonByName").mockResolvedValue({ id: 0 });
+      jest
+        .spyOn(jwtManager, "generateToken")
+        .mockResolvedValue({ personId: 0 });
       const res = await request(app)
         .post("/api/auth/login")
         .send({ userName: "admin", password: "valid-password" })

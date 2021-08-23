@@ -115,6 +115,7 @@ module.exports = (query) => {
           "t.*",
           "s.start_date",
           "s.final_date",
+          "s.is_open",
           query.raw("sg.name as stage")
         )
         .from({ t: "tasks" })
