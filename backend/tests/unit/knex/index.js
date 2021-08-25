@@ -17,7 +17,7 @@ module.exports = {
     for (let i = 0; i < 10; i++) {
       await testKnex.migrate.down(knexfile.migrations);
     }
-    testKnex.destroy();
+    await testKnex.destroy();
     fs.unlinkSync(config.connection.filename);
   },
 };
