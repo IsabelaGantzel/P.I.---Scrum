@@ -70,11 +70,13 @@ module.exports = (query) => {
         .limit(25);
       return projects;
     },
-    async getProject({ projectId }) {
+    async getProject({ projectId, personId }) {
       const [project] = await query
         .select()
         .from("person_projects")
-        .where("id", projectId);
+        .where("id", projectId)
+        .andWhere("person_id", personId)
+        .limit(1);
       if (project) {
         const tasks = await query
           .select("t.*", "s.*", query.raw("sg.name as stage"))
@@ -100,11 +102,12 @@ module.exports = (query) => {
         return null;
       }
     },
-    async getProjectById({ projectId }) {
+    async getProjectById({ projectId, personId }) {
       const [project] = await query
         .select()
         .from({ p: "person_projects" })
         .where("p.id", projectId)
+        .andWhere("person_id", personId)
         .limit(1);
       return project;
     },

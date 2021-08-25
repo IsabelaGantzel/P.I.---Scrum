@@ -38,7 +38,7 @@ module.exports = {
   async show(req, res) {
     const { personId } = req.locals.token;
     const { projectId } = req.params;
-    const project = await db.getProject({ projectId });
+    const project = await db.getProject({ projectId, personId });
     if (!project) {
       res.status(404).json({ error: "Project not found" });
     } else if (project.person_id === personId) {

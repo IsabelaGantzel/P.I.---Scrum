@@ -184,7 +184,10 @@ describe("Knex Database", () => {
   });
 
   test("db.getProject() must return a complete project", async () => {
-    const project = await db.getProject({ projectId: data.projectId });
+    const project = await db.getProject({
+      projectId: data.projectId,
+      personId: data.clientPersonId,
+    });
     expect(project).not.toBeNull();
     expect(project).toHaveProperty("id", data.projectId);
     expect(project).toHaveProperty("name");
@@ -197,7 +200,10 @@ describe("Knex Database", () => {
     expect(project.tasks).toHaveLength(0);
   });
   test("db.getProject() must return null if project not exists", async () => {
-    const project = await db.getProject({ projectId: -1 });
+    const project = await db.getProject({
+      projectId: -1,
+      personId: data.clientPersonId,
+    });
     expect(project).toBeNull();
   });
   test("db.getProjects() must return an array of projects", async () => {
@@ -236,8 +242,23 @@ describe("Knex Database", () => {
     });
   });
 
+  test("db.getProjectById() must be of a specific person", async () => {
+    const project1 = await db.getProjectById({
+      projectId: data.projectId,
+      personId: data.clientPersonId,
+    });
+    const project2 = await db.getProjectById({
+      projectId: data.projectId,
+      personId: data.managerPersonId,
+    });
+
+    expect(project1.person_id).not.toBe(project2.person_id);
+  });
   test("db.getProjectById() must return a project, but not as db.getProject()", async () => {
-    const project = await db.getProjectById({ projectId: data.projectId });
+    const project = await db.getProjectById({
+      projectId: data.projectId,
+      personId: data.clientPersonId,
+    });
     expect(project).not.toBeNull();
     expect(project).not.toHaveProperty("tasks");
     expect(project).not.toHaveProperty("sprint_count");

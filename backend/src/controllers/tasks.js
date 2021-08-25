@@ -5,7 +5,7 @@ module.exports = {
     const { personId } = req.locals.token;
     const { page = 0 } = req.query;
     const projectId = Number(req.params.projectId);
-    const project = await db.getProjectById({ projectId });
+    const project = await db.getProjectById({ projectId, personId });
 
     if (!project) {
       res.status(404).json({ error: "Project not found" });
