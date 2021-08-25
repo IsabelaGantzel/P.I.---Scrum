@@ -25,7 +25,9 @@ app.use(express.static(path.join(__dirname, "..", "public")));
 // @ts-ignore
 app.use(
   "/api",
-  morgan("combined", { skip: (req, res) => process.env.NODE_ENV === "test" })
+  morgan(":method :url :status :res[content-length] - :response-time ms", {
+    skip: (req, res) => process.env.NODE_ENV === "test",
+  })
 );
 
 app.post(
