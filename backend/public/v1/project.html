@@ -59,7 +59,7 @@
               <div class="stage">
                 <div class="stage-header">
                   <div class="stage-name" x-text="stage.title"></div>
-                  <div class="stage-info" x-text="stage.info"></div>
+                  <div class="stage-info" x-text="calculateStageInfo(stage.name)"></div>
                 </div>
                 <div class="stage-body">
                   <template x-for="taskId in stage.tasks" :key="taskId">
@@ -136,29 +136,26 @@
         ],
         otherTasks: [],
         tasks: {},
-        _fillTasks(tasks) {
-          const stageInfos = {};
-          for (const task of tasks) {
-            const stage = this.stages.find(s => s.name === task.stage);
-            if (stage) {
-              if (!stageInfos[stage]) {
-                stageInfos[stage] = {
-                  tasksCount: 0,
-                  pointsCount: 0
-                };
-              }
-              stageInfos[stage].tasksCount++;
-              stageInfos[stage].pointsCount += task.points;
-
-              this.tasks[task.id] = task;
-              stage.tasks.push(task.id);
-            }
+        calculateStageInfo(stageName) {
+          const stage = this.stages.find(s => s.name === stageName);
+          if (stage) {
+            const pointsCount = stage.tasks.reduce((acc, taskId) => acc + this.tasks[taskId].points, 0);
+            const tasksCount = stage.tasks.length;
+            return `${tasksCount} itens - ${pointsCount} pontos`;
           }
-
-          for (const name in stageInfos) {
-            const stage = this.stages.find(s => s.name === name);
-            const infos = stageInfos[name];
-            stage.info = `${infos.tasksCount} itens - ${infos.pointsCount} pontos`;
+          return "##ERROR##";
+        },
+        _fillTasks(tasks) {
+          const stagesMap = Object.fromEntries(this.stages.map((s) => [s.name, s]));
+          for (const task of tasks) {
+            task.stage = task.stage.toLowerCase();
+            const stage = stagesMap[task.stage];
+            if (stage) {
+              this.tasks[task.id] = { ...task, updates: [] };
+              stage.tasks.push(task.id);
+            } else {
+              console.warn("Invalid stage name:", task.stage);
+            }
           }
         },
         async onInit() {
@@ -180,7 +177,7 @@
                 ...task,
                 pointsText: `${task.points} pontos`,
                 selected: false
-              }))
+              }));
               this._fillTasks(response.tasks);
             }
           }
