@@ -73,15 +73,18 @@ describe("Knex Database", () => {
     await knex.dropInstance();
   }, 20000);
 
-  const DAYS = 3600;
-  let id = 10;
+  const DAYS = 24 * 60 * 60 * 1000;
+  let id = 100;
   let data = {
     clientPersonId: 0,
     managerPersonId: 0,
-    projectId: 0,
     managerId: 0,
     clientId: 0,
-    taskId: 0,
+    projectId1: 0,
+    taskId1: 0,
+    projectId2: 0,
+    taskId2: 0,
+    sprintId: 0,
   };
   beforeAll(async () => {
     const [clientPersonId] = await db.query("persons").insert({
@@ -98,33 +101,64 @@ describe("Knex Database", () => {
     const [managerId] = await db.query("managers").insert({
       person_id: managerPersonId,
     });
-    const [projectId] = await db.query("projects").insert({
+    const [projectId1] = await db.query("projects").insert({
       name: "project-0",
       start_date: Date.now(),
       final_date: Date.now() + 30 + DAYS,
       manager_id: managerId,
       client_id: clientId,
     });
-    const [taskId] = await db.query("tasks").insert({
-      title: "test",
+    const [taskId1] = await db.query("tasks").insert({
+      title: "test-0",
       description: "desc",
       points: 100,
-      project_id: projectId,
+      project_id: projectId1,
+    });
+    const [projectId2] = await db.query("projects").insert({
+      name: "project-0",
+      start_date: Date.now(),
+      final_date: Date.now() + 30 + DAYS,
+      manager_id: managerId,
+      client_id: clientId,
+    });
+    const [taskId2] = await db.query("tasks").insert({
+      title: "test-0",
+      description: "desc",
+      points: 100,
+      project_id: projectId2,
+    });
+    const [sprintId] = await db.query("sprints").insert({
+      start_date: Date.now(),
+      final_date: Date.now() + 7 * DAYS,
+    });
+    const [stage] = await db.query
+      .select()
+      .from("stages")
+      .where("name", "Started")
+      .limit(1);
+    await db.query("sprint_tasks").insert({
+      stage_id: stage.id,
+      task_id: taskId2,
+      sprint_id: sprintId,
     });
 
     data = {
       clientPersonId,
       managerPersonId,
-      projectId,
       managerId,
       clientId,
-      taskId,
+      projectId1,
+      taskId1,
+      projectId2,
+      taskId2,
+      sprintId,
+      stageId: stage.id,
     };
   });
 
   test("db.insertDevs() must returns an id", async () => {
     const devsId = await db.insertDevs({
-      projectId: data.projectId,
+      projectId: data.projectId1,
       devIds: [data.managerPersonId],
     });
     expect(Array.isArray(devsId)).toBe(true);
@@ -146,11 +180,11 @@ describe("Knex Database", () => {
   });
 
   describe("Invariant selection", () => {
-    test(`db.getClient() must returns null`, async () => {
+    test("db.getClient() must returns null if person not exists", async () => {
       const id = await db.getClient(-1);
       expect(id).toBeNull();
     });
-    test(`db.getManager() must returns null`, async () => {
+    test("db.getManager() must returns null if person not exists", async () => {
       const id = await db.getManager(-1);
       expect(id).toBeNull();
     });
@@ -180,11 +214,11 @@ describe("Knex Database", () => {
 
   test("db.getProject() must return a complete project", async () => {
     const project = await db.getProject({
-      projectId: data.projectId,
+      projectId: data.projectId1,
       personId: data.clientPersonId,
     });
     expect(project).not.toBeNull();
-    expect(project).toHaveProperty("id", data.projectId);
+    expect(project).toHaveProperty("id", data.projectId1);
     expect(project).toHaveProperty("name");
     expect(project).toHaveProperty("start_date");
     expect(project).toHaveProperty("final_date");
@@ -217,11 +251,11 @@ describe("Knex Database", () => {
       expect(project).toHaveProperty("manager_id");
       expect(project).toHaveProperty("person_id");
       expect(project).toHaveProperty("role");
-      expect(project).toHaveProperty("sprint_count", 0);
+      expect(project).toHaveProperty("sprint_count");
     });
   });
   test("db.getTasks() must return an array of tasks", async () => {
-    const tasks = await db.getTasks({ projectId: data.projectId, page: 0 });
+    const tasks = await db.getTasks({ projectId: data.projectId1, page: 0 });
     expect(Array.isArray(tasks)).toBe(true);
     expect(tasks.length >= 1).toBe(true);
 
@@ -239,11 +273,11 @@ describe("Knex Database", () => {
 
   test("db.getProjectById() must be of a specific person", async () => {
     const project1 = await db.getProjectById({
-      projectId: data.projectId,
+      projectId: data.projectId1,
       personId: data.clientPersonId,
     });
     const project2 = await db.getProjectById({
-      projectId: data.projectId,
+      projectId: data.projectId1,
       personId: data.managerPersonId,
     });
 
@@ -251,7 +285,7 @@ describe("Knex Database", () => {
   });
   test("db.getProjectById() must return a project, but not as db.getProject()", async () => {
     const project = await db.getProjectById({
-      projectId: data.projectId,
+      projectId: data.projectId1,
       personId: data.clientPersonId,
     });
     expect(project).not.toBeNull();
