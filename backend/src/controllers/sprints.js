@@ -1,5 +1,9 @@
 const db = require("../database");
 
+function isNil(x) {
+  return x === null || x === undefined;
+}
+
 module.exports = {
   async store(req, res) {
     const { personId } = req.locals.token;
@@ -13,8 +17,11 @@ module.exports = {
     } else if (project.person_id === personId) {
       const tasks = await db.getFreeTasks({ projectId, taskIds });
 
-      if (tasks.length !== taskIds.length || tasks.some((x) => x.sprint_id)) {
-        res.status(401).json({ error: "Invalid tasks" });
+      if (
+        tasks.length !== taskIds.length ||
+        tasks.some((x) => !isNil(x.sprint_id))
+      ) {
+        res.status(400).json({ error: "Invalid tasks" });
       } else {
         const currentSprint = await db.getCurrentSprint({ projectId });
         const sprintId = currentSprint

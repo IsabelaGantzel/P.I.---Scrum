@@ -6,6 +6,11 @@ const db = require("../../src/database");
 const passwordManager = require("../../src/services/passwordManager");
 const jwtManager = require("../../src/services/jwtManager");
 
+function expectError(res, statusCode, message) {
+  expect(res.statusCode).toBe(statusCode);
+  expect(res.body).toHaveProperty("error", message);
+}
+
 describe("Api", () => {
   afterAll(() => {
     db.query.destroy();
@@ -74,8 +79,7 @@ describe("Api", () => {
         .get("/api/projects")
         .expect("content-type", /json/);
 
-      expect(res.body).toHaveProperty("error");
-      expect(res.body.error).toBe("Missing authorization token");
+      expectError(res, 401, "Missing authorization token");
     });
     test("Must fail if token was expired", async () => {
       class NamedError extends Error {
@@ -93,8 +97,7 @@ describe("Api", () => {
         .set("authorization", "Bearer fake-token")
         .expect("content-type", /json/);
 
-      expect(res.body).toHaveProperty("error");
-      expect(res.body.error).toBe("Authorization token expired");
+      expectError(res, 401, "Authorization token expired");
     });
     test("Must fail if something bad happens", async () => {
       jest.spyOn(jwtManager, "readToken").mockRejectedValueOnce(new Error());
@@ -151,8 +154,7 @@ describe("Api", () => {
         .set("authorization", "Bearer fake-token")
         .expect("content-type", /json/);
 
-      expect(res.statusCode).toBe(404);
-      expect(res.body).toHaveProperty("error", "Project not found");
+      expectError(res, 404, "Project not found");
     });
     test("Must return a error if user is not the owner", async () => {
       jest
@@ -164,11 +166,7 @@ describe("Api", () => {
         .set("authorization", "Bearer fake-token")
         .expect("content-type", /json/);
 
-      expect(res.statusCode).toBe(401);
-      expect(res.body).toHaveProperty(
-        "error",
-        "Unauthorized access to project"
-      );
+      expectError(res, 401, "Unauthorized access to project");
     });
   });
   describe("GET /api/projects/{projectId}/tasks", () => {
@@ -203,8 +201,7 @@ describe("Api", () => {
         .set("authorization", "Bearer fake-token")
         .expect("content-type", /json/);
 
-      expect(res.statusCode).toBe(404);
-      expect(res.body).toHaveProperty("error", "Project not found");
+      expectError(res, 404, "Project not found");
     });
     test("Must return a error if user is not the owner", async () => {
       jest
@@ -216,11 +213,7 @@ describe("Api", () => {
         .set("authorization", "Bearer fake-token")
         .expect("content-type", /json/);
 
-      expect(res.statusCode).toBe(401);
-      expect(res.body).toHaveProperty(
-        "error",
-        "Unauthorized access to project"
-      );
+      expectError(res, 401, "Unauthorized access to project");
     });
   });
   describe("POST /api/projects", () => {
@@ -248,6 +241,68 @@ describe("Api", () => {
       expect(res.body).toHaveProperty("manager_id", 0);
       expect(res.body).toHaveProperty("client_id", 0);
       expect(res.body).toHaveProperty("devs", [0]);
+    });
+  });
+  describe("POST /api/projects/{projectId}/sprint-tasks", () => {
+    const personId = 1;
+    beforeAll(() => {
+      jest.spyOn(jwtManager, "readToken").mockResolvedValue({ personId });
+      jest
+        .spyOn(db, "getProjectById")
+        .mockResolvedValue({ id: 0, person_id: personId });
+      jest.spyOn(db, "getFreeTasks").mockResolvedValue([{}]);
+      jest.spyOn(db, "getCurrentSprint").mockResolvedValue(null);
+      jest.spyOn(db, "insertSprint").mockResolvedValue(0);
+      jest.spyOn(db, "insertTasksToSprint").mockResolvedValue(null);
+    });
+
+    function doRequest() {
+      return request(app)
+        .post("/api/projects/1/sprint-tasks")
+        .send({ taskIds: [0] })
+        .set("authorization", "Bearer fake-token")
+        .expect("content-type", /json/);
+    }
+
+    test("Must return success if pass for all validations (1)", async () => {
+      const res = await doRequest();
+      expect(res.statusCode).toBe(200);
+
+      expect(res.body).toHaveProperty(
+        "message",
+        "Tasks was linked with sprints successfully"
+      );
+    });
+    test("Must return success if pass for all validations (2)", async () => {
+      jest.spyOn(db, "getCurrentSprint").mockResolvedValueOnce({ id: 0 });
+
+      const res = await doRequest();
+      expect(res.statusCode).toBe(200);
+
+      expect(res.body).toHaveProperty(
+        "message",
+        "Tasks was linked with sprints successfully"
+      );
+    });
+    test("Must return a error if user is not the owner", async () => {
+      jest.spyOn(db, "getFreeTasks").mockResolvedValueOnce([{ sprint_id: 1 }]);
+
+      const res = await doRequest();
+      expectError(res, 400, "Invalid tasks");
+    });
+    test("Must return a error if not found", async () => {
+      jest.spyOn(db, "getProjectById").mockResolvedValueOnce(null);
+
+      const res = await doRequest();
+      expectError(res, 404, "Project not found");
+    });
+    test("Must return a error if user is not the owner", async () => {
+      jest
+        .spyOn(db, "getProjectById")
+        .mockResolvedValueOnce({ id: 0, person_id: -1 });
+
+      const res = await doRequest();
+      expectError(res, 401, "Unauthorized access to project");
     });
   });
 });
