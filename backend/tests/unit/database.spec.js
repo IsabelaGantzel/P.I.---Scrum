@@ -156,6 +156,15 @@ describe("Knex Database", () => {
     };
   });
 
+  test("db.insertPerson() must return an id", async () => {
+    const currentId = id++;
+    const personId = await db.insertPerson({
+      id: currentId,
+      user: "fake",
+      password: "123",
+    });
+    expect(personId).toBe(currentId);
+  });
   test("db.insertDevs() must returns an id", async () => {
     const devsId = await db.insertDevs({
       projectId: data.projectId1,
@@ -175,6 +184,41 @@ describe("Knex Database", () => {
       manager_id: data.managerId,
     });
     expect(projectId).toBe(currentId);
+  });
+  test("db.insertSprint() must returns an id", async () => {
+    const sprintId = await db.insertSprint();
+    expect(typeof sprintId === "number").toBe(true);
+  });
+  test("db.insertTask() must returns an id", async () => {
+    const currentId = id++;
+    const taskId = await db.insertTask({
+      id: currentId,
+      title: "test",
+      description: "desc",
+      points: 100,
+      project_id: data.projectId2,
+    });
+    expect(taskId).toBe(currentId);
+  });
+  test("db.insertTasksToSprint() must link tasks with sprint", async () => {
+    const [taskId] = await db.query("tasks").insert({
+      title: "test",
+      description: "desc",
+      points: 1000,
+      project_id: data.projectId2,
+    });
+    await db.insertTasksToSprint({
+      taskIds: [taskId],
+      sprintId: data.sprintId,
+    });
+    const result = await db.query
+      .select()
+      .from({ s: "sprints" })
+      .join({ st: "sprint_tasks" }, "st.sprint_id", "=", "s.id")
+      .join({ t: "tasks" }, "st.task_id", "=", "t.id")
+      .where("s.id", data.sprintId)
+      .andWhere("t.id", taskId);
+    expect(result).toHaveLength(1);
   });
 
   describe("Invariant selection", () => {
@@ -311,5 +355,32 @@ describe("Knex Database", () => {
     const person = await db.getPersonByName(userName);
     expect(person).toHaveProperty("id", personId);
     expect(person).toHaveProperty("user", userName);
+  });
+
+  test("db.getFirstStage() must return the same number", async () => {
+    const stageId1 = await db.getFirstStage();
+    const stageId2 = await db.getFirstStage();
+
+    expect(stageId1).not.toBeNull();
+    expect(stageId1).toBe(stageId2);
+  });
+
+  test("db.getCurrentSprint() must return null is not exists", async () => {
+    const sprint = await db.getCurrentSprint({ projectId: data.projectId1 });
+    expect(sprint).toBeNull();
+  });
+  test("db.getCurrentSprint() must return a object if exists", async () => {
+    const sprint = await db.getCurrentSprint({ projectId: data.projectId2 });
+    expect(sprint).not.toBeNull();
+    expect(sprint.id).toBe(data.sprintId);
+  });
+  test("db.getFreeTasks() must return an array of tasks", async () => {
+    const tasks = await db.getFreeTasks({
+      projectId: data.projectId1,
+      taskIds: [data.taskId1],
+    });
+    expect(Array.isArray(tasks)).toBe(true);
+    expect(tasks).toHaveLength(1);
+    expect(tasks[0]).toHaveProperty("id", data.taskId1);
   });
 });

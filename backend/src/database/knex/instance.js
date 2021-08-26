@@ -1,4 +1,7 @@
 module.exports = (query) => {
+  const DAYS = 24 * 60 * 60 * 1000;
+  let firstStageId = null;
+
   return {
     query,
     async insertDevs({ projectId, devIds }) {
@@ -19,6 +22,27 @@ module.exports = (query) => {
     async insertPerson(personData) {
       const [personId] = await query("persons").insert(personData);
       return personId;
+    },
+    async insertSprint() {
+      const [sprintId] = await query("sprints").insert({
+        start_date: Date.now(),
+        final_date: Date.now() + 7 * DAYS,
+      });
+      return sprintId;
+    },
+    async insertTask(taskData) {
+      const [taskId] = await query("tasks").insert(taskData);
+      return taskId;
+    },
+    async insertTasksToSprint({ taskIds, sprintId }) {
+      const firstStageId = await this.getFirstStage();
+      await query("sprint_tasks").insert(
+        taskIds.map((taskId) => ({
+          task_id: taskId,
+          sprint_id: sprintId,
+          stage_id: firstStageId,
+        }))
+      );
     },
     async getClient(personId) {
       const [person] = await query("persons").where("id", personId).select();
@@ -151,6 +175,38 @@ module.exports = (query) => {
         .offset(25 * page)
         .limit(25);
       return tasks;
+    },
+    async getFreeTasks({ taskIds, projectId }) {
+      const tasks = await query
+        .select("t.*", "st.sprint_id")
+        .from({ t: "tasks" })
+        .leftJoin({ st: "sprint_tasks" }, "st.task_id", "=", "t.id")
+        .whereIn("t.id", taskIds)
+        .andWhere("t.project_id", projectId);
+      return tasks;
+    },
+    async getCurrentSprint({ projectId }) {
+      const [sprint] = await query
+        .select("s.*")
+        .from({ p: "person_projects" })
+        .leftJoin({ t: "tasks" }, "t.project_id", "=", "p.id")
+        .leftJoin({ st: "sprint_tasks" }, "st.task_id", "=", "t.id")
+        .leftJoin({ s: "sprints" }, "s.id", "=", "st.sprint_id")
+        .where("p.id", projectId)
+        .andWhere("s.is_open", true)
+        .limit(1);
+      return sprint || null;
+    },
+    async getFirstStage() {
+      if (firstStageId === null) {
+        const [stage] = await query
+          .select()
+          .from("stages")
+          .where("name", "Started")
+          .limit(1);
+        firstStageId = stage.id;
+      }
+      return firstStageId;
     },
   };
 };

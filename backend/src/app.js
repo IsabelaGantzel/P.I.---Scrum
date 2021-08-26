@@ -13,6 +13,7 @@ const locals = require("./middlewares/locals");
 const auth = require("./controllers/auth");
 const projects = require("./controllers/projects");
 const tasks = require("./controllers/tasks");
+const sprints = require("./controllers/sprints");
 
 const app = express();
 
@@ -22,13 +23,12 @@ app.use(locals);
 
 app.use(express.static(path.join(__dirname, "..", "public")));
 
-// @ts-ignore
-app.use(
-  "/api",
-  morgan(":method :url :status :res[content-length] - :response-time ms", {
-    skip: (req, res) => process.env.NODE_ENV === "test",
-  })
+const logger = morgan(
+  ":method :url :status :res[content-length] - :response-time ms",
+  { skip: (req, res) => process.env.NODE_ENV === "test" }
 );
+// @ts-ignore
+app.use("/api", logger);
 
 app.post(
   "/api/auth/login",
@@ -56,6 +56,17 @@ app.post(
     })
   ),
   projects.store
+);
+
+app.post(
+  "/api/projects/:projectId/sprint-tasks",
+  authorize,
+  validate(
+    Joi.object({
+      taskIds: Joi.array().items(Joi.number().required()).max(10).required(),
+    }).required()
+  ),
+  sprints.store
 );
 
 module.exports = app;
