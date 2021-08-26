@@ -1,8 +1,16 @@
 module.exports = (query) => {
   return {
     query,
-    async insertDevs(devs) {
-      return await query("devs").insert(devs);
+    async insertDevs({ projectId, devIds }) {
+      return Promise.all(
+        devIds.map(async (personId) => {
+          const [devId] = query("devs").insert({
+            project_id: projectId,
+            person_id: personId,
+          });
+          return devId;
+        })
+      );
     },
     async insertProject(projectData) {
       return await query("projects").insert(projectData);

@@ -122,18 +122,13 @@ describe("Knex Database", () => {
     };
   });
 
-  test(`db.insertDevs() must returns an array of ids`, async () => {
-    const currentId = id++;
-    const result = await db.insertDevs([
-      {
-        id: currentId,
-        person_id: data.managerPersonId,
-        project_id: data.projectId,
-      },
-    ]);
-    expect(Array.isArray(result)).toBe(true);
-    expect(result).toHaveLength(1);
-    expect(result[0]).toBe(currentId);
+  test("db.insertDevs() must returns an id", async () => {
+    const devsId = await db.insertDevs({
+      projectId: data.projectId,
+      devIds: [data.managerPersonId],
+    });
+    expect(Array.isArray(devsId)).toBe(true);
+    expect(devsId).toHaveLength(1);
   });
   test(`db.insertProject() must returns an array of ids`, async () => {
     const currentId = id++;
