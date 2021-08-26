@@ -90,7 +90,13 @@ module.exports = (query) => {
         .limit(1);
       if (project) {
         const tasks = await query
-          .select("t.*", "s.*", query.raw("sg.name as stage"))
+          .select(
+            "t.*",
+            "s.start_date",
+            "s.final_date",
+            "s.is_open",
+            query.raw("sg.name as stage")
+          )
           .from({ t: "tasks" })
           .join({ st: "sprint_tasks" }, "t.id", "=", "st.task_id")
           .join({ s: "sprints" }, "s.id", "=", "st.sprint_id")
