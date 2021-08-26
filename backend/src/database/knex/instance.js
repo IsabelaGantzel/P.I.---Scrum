@@ -13,10 +13,12 @@ module.exports = (query) => {
       );
     },
     async insertProject(projectData) {
-      return await query("projects").insert(projectData);
+      const [projectId] = await query("projects").insert(projectData);
+      return projectId;
     },
-    async insertPerson(persons) {
-      return await query("persons").insert(persons);
+    async insertPerson(personData) {
+      const [personId] = await query("persons").insert(personData);
+      return personId;
     },
     async getClient(personId) {
       const [person] = await query("persons").where("id", personId).select();

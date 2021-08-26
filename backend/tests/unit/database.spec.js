@@ -164,9 +164,9 @@ describe("Knex Database", () => {
     expect(Array.isArray(devsId)).toBe(true);
     expect(devsId).toHaveLength(1);
   });
-  test(`db.insertProject() must returns an array of ids`, async () => {
+  test("db.insertProject() must returns an id", async () => {
     const currentId = id++;
-    const result = await db.insertProject({
+    const projectId = await db.insertProject({
       id: currentId,
       name: "fake",
       start_date: Date.now(),
@@ -174,9 +174,7 @@ describe("Knex Database", () => {
       client_id: data.clientId,
       manager_id: data.managerId,
     });
-    expect(Array.isArray(result)).toBe(true);
-    expect(result).toHaveLength(1);
-    expect(result[0]).toBe(currentId);
+    expect(projectId).toBe(currentId);
   });
 
   describe("Invariant selection", () => {
@@ -303,7 +301,7 @@ describe("Knex Database", () => {
 
   test("db.insertPerson() must insert a person", async () => {
     const userName = "test-user";
-    const [personId] = await db.insertPerson({
+    const personId = await db.insertPerson({
       user: userName,
       password: "1234",
     });
