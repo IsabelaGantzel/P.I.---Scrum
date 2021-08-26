@@ -67,9 +67,10 @@ module.exports = (query) => {
               )
             )
             .from({ p2: "projects " })
-            .leftJoin({ t: "tasks" }, "t.project_id", "=", "p2.id")
-            .leftJoin({ st: "sprint_tasks" }, "st.task_id", "=", "t.id")
-            .leftJoin({ s: "sprints" }, "st.sprint_id", "=", "s.id")
+            .join({ t: "tasks" }, "t.project_id", "=", "p2.id")
+            .join({ st: "sprint_tasks" }, "st.task_id", "=", "t.id")
+            .join({ s: "sprints" }, "st.sprint_id", "=", "s.id")
+            .where("s.is_open", true)
             .as("s"),
           "s.project_id",
           "p.id"
