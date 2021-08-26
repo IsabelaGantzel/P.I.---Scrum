@@ -7,7 +7,7 @@ module.exports = (query) => {
     async insertDevs({ projectId, devIds }) {
       return Promise.all(
         devIds.map(async (personId) => {
-          const [devId] = query("devs").insert({
+          const [devId] = await query("devs").insert({
             project_id: projectId,
             person_id: personId,
           });

@@ -229,7 +229,7 @@ describe("Api", () => {
       jest.spyOn(db, "getClient").mockResolvedValueOnce(0);
       jest.spyOn(db, "getManager").mockResolvedValueOnce(0);
       jest.spyOn(db, "insertDevs").mockResolvedValueOnce([0]);
-      jest.spyOn(db, "insertProject").mockResolvedValueOnce([0]);
+      jest.spyOn(db, "insertProject").mockResolvedValueOnce(0);
       const res = await request(app)
         .post("/api/projects")
         .send({
