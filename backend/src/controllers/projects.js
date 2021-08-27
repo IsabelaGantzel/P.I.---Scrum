@@ -25,7 +25,7 @@ module.exports = {
   },
   async index(req, res) {
     const { personId } = req.locals.token;
-    const { page = 0 } = req.params;
+    const page = req.query.page ? Number(req.query.page) : 0;
     const projects = await db.getProjects({ personId, page });
     res.json({ result: projects });
   },

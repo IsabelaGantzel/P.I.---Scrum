@@ -3,7 +3,7 @@ const db = require("../database");
 module.exports = {
   async index(req, res) {
     const { personId } = req.locals.token;
-    const { page = 0 } = req.query;
+    const page = req.query.page ? Number(req.query.page) : 0;
     const projectId = Number(req.params.projectId);
     const project = await db.getProjectById({ projectId, personId });
 
