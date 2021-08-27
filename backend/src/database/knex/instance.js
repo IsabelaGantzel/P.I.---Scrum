@@ -1,4 +1,11 @@
-module.exports = (query) => {
+const { knex } = require("knex");
+
+/**
+ * Create a database interface of a knex connection
+ *
+ * @param {knex} query
+ */
+function instance(query) {
   const DAYS = 24 * 60 * 60 * 1000;
   let firstStageId = null;
 
@@ -209,4 +216,6 @@ module.exports = (query) => {
       return firstStageId;
     },
   };
-};
+}
+
+module.exports = instance;
