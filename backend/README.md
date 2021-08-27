@@ -21,11 +21,16 @@ ADMIN_PASSWORD=1234
 
 Após fazer estas configurações iniciais, execute o comando de preenchimento estático do knex.
 Caso esteja em desenvolvimento, execute o script para adicionar dados falsos ao banco e poder fazer os testes localmente.
+Com o arquivo .env configurado você já pode executar os testes existentes da aplicação.
 
 ```console
 $ npm run knex:seed
+
 $ # Comando opcional para adicionar dados falsos
 $ node script/addFakeData.js
+
+$ # Comando para executar os testes
+$ npm test
 ```
 
 Após realizar estes passos o projeto já está pronto para ser executado.
