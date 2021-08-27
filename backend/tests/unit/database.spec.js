@@ -68,7 +68,7 @@ describe("Knex Database", () => {
 
   beforeAll(async () => {
     await knex.createInstance();
-  });
+  }, 20000);
   afterAll(async () => {
     await knex.dropInstance();
   }, 20000);

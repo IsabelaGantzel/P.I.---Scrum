@@ -1,4 +1,4 @@
-const requireEnvNotNull = require("../../src/config/requireEnvNotNull");
+const { requireEnvNotNull } = require("../../build/config/requireEnvNotNull");
 const config = require("../../src/database/knex/config");
 
 const { describe, expect, test } = require("@jest/globals");

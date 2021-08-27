@@ -1,19 +1,19 @@
-const express = require("express");
-const cors = require("cors");
-const Joi = require("joi");
-const path = require("path");
-const morgan = require("morgan");
+import express from "express";
+import cors from "cors";
+import Joi from "joi";
+import path from "path";
+import morgan from "morgan";
 
-require("express-async-errors");
+import "express-async-errors";
 
-const validate = require("./middlewares/validate");
-const authorize = require("./middlewares/authorize");
-const locals = require("./middlewares/locals");
+import { validate } from "./middlewares/validate";
+import { authorize } from "./middlewares/authorize";
+import { locals } from "./middlewares/locals";
 
-const auth = require("./controllers/auth");
-const projects = require("./controllers/projects");
-const tasks = require("./controllers/tasks");
-const sprints = require("./controllers/sprints");
+import * as auth from "./controllers/auth";
+import * as projects from "./controllers/projects";
+import * as tasks from "./controllers/tasks";
+import * as sprints from "./controllers/sprints";
 
 const app = express();
 
@@ -38,12 +38,12 @@ app.post(
       password: Joi.string().required(),
     })
   ),
-  auth.login
+  auth.login as any
 );
 
-app.get("/api/projects", authorize, projects.index);
-app.get("/api/projects/:projectId", authorize, projects.show);
-app.get("/api/projects/:projectId/tasks", authorize, tasks.index);
+app.get("/api/projects", authorize, projects.index as any);
+app.get("/api/projects/:projectId", authorize, projects.show as any);
+app.get("/api/projects/:projectId/tasks", authorize, tasks.index as any);
 app.post(
   "/api/projects",
   authorize,
@@ -55,7 +55,7 @@ app.post(
       devIds: Joi.array().default([]).unique().items(Joi.number().required()),
     })
   ),
-  projects.store
+  projects.store as any
 );
 
 app.post(
@@ -66,7 +66,7 @@ app.post(
       taskIds: Joi.array().items(Joi.number().required()).max(10).required(),
     }).required()
   ),
-  sprints.store
+  sprints.store as any
 );
 
-module.exports = app;
+export { app };

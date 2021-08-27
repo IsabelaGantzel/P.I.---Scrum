@@ -2,7 +2,7 @@ const fs = require("fs");
 const { knex } = require("knex");
 const config = require("./config");
 const knexfile = require("../../../knexfile");
-const instance = require("../../../src/database/knex/instance");
+const { instance } = require("../../../build/database/knex/instance");
 
 const testKnex = knex(config);
 

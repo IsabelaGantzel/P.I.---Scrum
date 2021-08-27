@@ -1,10 +1,12 @@
-module.exports = (query) => {
+import { Knex } from "knex";
+
+export function instance(query: Knex) {
   const DAYS = 24 * 60 * 60 * 1000;
-  let firstStageId = null;
+  let firstStageId: number | null = null;
 
   return {
     query,
-    async insertDevs({ projectId, devIds }) {
+    async insertDevs({ projectId, devIds }: { projectId: number, devIds: number[] }) {
       return Promise.all(
         devIds.map(async (personId) => {
           const [devId] = await query("devs").insert({
@@ -15,11 +17,11 @@ module.exports = (query) => {
         })
       );
     },
-    async insertProject(projectData) {
+    async insertProject(projectData: any) {
       const [projectId] = await query("projects").insert(projectData);
       return projectId;
     },
-    async insertPerson(personData) {
+    async insertPerson(personData: any) {
       const [personId] = await query("persons").insert(personData);
       return personId;
     },
@@ -30,11 +32,11 @@ module.exports = (query) => {
       });
       return sprintId;
     },
-    async insertTask(taskData) {
+    async insertTask(taskData: any) {
       const [taskId] = await query("tasks").insert(taskData);
       return taskId;
     },
-    async insertTasksToSprint({ taskIds, sprintId }) {
+    async insertTasksToSprint({ taskIds, sprintId }: { taskIds: number[], sprintId: number }) {
       const firstStageId = await this.getFirstStage();
       await query("sprint_tasks").insert(
         taskIds.map((taskId) => ({
@@ -44,7 +46,7 @@ module.exports = (query) => {
         }))
       );
     },
-    async getClient(personId) {
+    async getClient(personId: number) {
       const [person] = await query("persons").where("id", personId).select();
       if (!person) return null;
 
@@ -57,7 +59,7 @@ module.exports = (query) => {
       });
       return clientId;
     },
-    async getManager(personId) {
+    async getManager(personId: number) {
       const [person] = await query("persons").where("id", personId).select();
       if (!person) return null;
 
@@ -70,7 +72,7 @@ module.exports = (query) => {
       });
       return managerId;
     },
-    async getPersonByName(userName) {
+    async getPersonByName(userName: string) {
       const [person] = await query("persons")
         .where("user", userName)
         .limit(1)
@@ -78,7 +80,7 @@ module.exports = (query) => {
       if (!person) return null;
       return person;
     },
-    async getProjects({ personId, page }) {
+    async getProjects({ personId, page }: { personId: number, page: number }) {
       const rawSum = query.raw("COUNT(s.sprint_id) as sprint_count");
       const projects = await query
         .select("p.*", "s.final_date as sprint_final_date", rawSum)
@@ -105,7 +107,7 @@ module.exports = (query) => {
         .limit(25);
       return projects;
     },
-    async getProject({ projectId, personId }) {
+    async getProject({ projectId, personId }: { projectId: number, personId: number }) {
       const [project] = await query
         .select()
         .from("person_projects")
@@ -143,7 +145,7 @@ module.exports = (query) => {
         return null;
       }
     },
-    async getProjectById({ projectId, personId }) {
+    async getProjectById({ projectId, personId }: { projectId: number, personId: number }) {
       const [project] = await query
         .select()
         .from({ p: "person_projects" })
@@ -152,7 +154,7 @@ module.exports = (query) => {
         .limit(1);
       return project;
     },
-    async getTasks({ projectId, page }) {
+    async getTasks({ projectId, page }: { projectId: number, page: number }) {
       const passedDate = "s.final_date < CURRENT_TIMESTAMP";
       const tasks = await query
         .select(
@@ -176,7 +178,7 @@ module.exports = (query) => {
         .limit(25);
       return tasks;
     },
-    async getFreeTasks({ taskIds, projectId }) {
+    async getFreeTasks({ taskIds, projectId }: { projectId: number, taskIds: number[] }) {
       const tasks = await query
         .select("t.*", "st.sprint_id")
         .from({ t: "tasks" })
@@ -185,7 +187,7 @@ module.exports = (query) => {
         .andWhere("t.project_id", projectId);
       return tasks;
     },
-    async getCurrentSprint({ projectId }) {
+    async getCurrentSprint({ projectId }: { projectId: number }) {
       const [sprint] = await query
         .select("s.*")
         .from({ p: "person_projects" })

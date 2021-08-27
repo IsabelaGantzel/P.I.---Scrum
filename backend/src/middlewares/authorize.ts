@@ -1,14 +1,18 @@
-const jwtManager = require("../services/jwtManager");
+import * as jwtManager from "../services/jwtManager";
+import { Request, Response, NextFunction } from "express";
 
 const BEARER = "Bearer ";
-async function authorize(req, res, next) {
+export async function authorize(req: Request, res: Response, next: NextFunction) {
   const bearerToken = req.headers.authorization;
   if (bearerToken && bearerToken.startsWith(BEARER)) {
     try {
       const token = bearerToken.slice(BEARER.length);
-      req.locals.token = await jwtManager.readToken(token);
+      // @ts-ignore
+      req.locals.token = await jwtManager.readToken(token) as any;
       next();
-    } catch (err) {
+    } catch (unknownErr) {
+      const err = unknownErr as Error;
+
       if (err.name === "TokenExpiredError") {
         res.status(401).json({ error: "Authorization token expired" });
       } else {
@@ -19,5 +23,3 @@ async function authorize(req, res, next) {
     res.status(401).json({ error: "Missing authorization token" });
   }
 }
-
-module.exports = authorize;

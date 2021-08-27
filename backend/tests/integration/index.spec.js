@@ -1,10 +1,11 @@
 // @ts-nocheck
 const { afterAll, describe, expect, test } = require("@jest/globals");
-const app = require("../../src/app");
 const request = require("supertest");
-const db = require("../../src/database");
-const passwordManager = require("../../src/services/passwordManager");
-const jwtManager = require("../../src/services/jwtManager");
+
+const { app } = require("../../build/app");
+const { db } = require("../../build/database");
+const passwordManager = require("../../build/services/passwordManager");
+const jwtManager = require("../../build/services/jwtManager");
 
 function expectError(res, statusCode, message) {
   expect(res.statusCode).toBe(statusCode);

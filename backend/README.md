@@ -41,3 +41,7 @@ $ npm run dev
 ```
 
 Após tudo isso, você já será capaz de acessar pelo seu navegador uma aplicação rodando no endereço http://localhost:3000 (Porta 3000 é o valor padrão existente no .env. Fique atento caso você tenha alterado ele).
+
+## Referencias
+
+- [Configurando TS](https://khalilstemmler.com/blogs/typescript/node-starter-project/)

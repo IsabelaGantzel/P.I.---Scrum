@@ -1,4 +1,4 @@
-function requireEnvNotNull(name) {
+export function requireEnvNotNull(name: string) {
   const variable = process.env[name];
   if (variable === null || variable === undefined) {
     throw new Error(`Environment variable '${name}' can't be null!`);
@@ -6,5 +6,3 @@ function requireEnvNotNull(name) {
     return variable;
   }
 }
-
-module.exports = requireEnvNotNull;

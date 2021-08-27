@@ -1,11 +1,11 @@
+import Joi from "joi";
+import { Request, Response, NextFunction } from "express";
+
 /**
  * Create a validation middleware by a Joi Schema model
- *
- * @param schema Joi Schema
- * @returns
  */
-function validate(schema, picker = (req) => req.body) {
-  return (req, res, next) => {
+export function validate(schema: Joi.Schema, picker = (req: Request) => req.body) {
+  return (req: Request, res: Response, next: NextFunction) => {
     const options = {
       abortEarly: false, // include all errors
     };
@@ -22,5 +22,3 @@ function validate(schema, picker = (req) => req.body) {
     }
   };
 }
-
-module.exports = validate;
