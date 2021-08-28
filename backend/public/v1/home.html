@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+
+  <!-- favicon -->
+  <link rel="apple-touch-icon" sizes="180x180" href="../others/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="../others/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../others/favicon-16x16.png">
+  <link rel="manifest" href="../others/site.webmanifest">
+  <link rel="mask-icon" href="../others/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/fonts.css">
+  <link rel="stylesheet" href="../css/reset.css">
+  <link rel="stylesheet" href="../css/badges.css">
+  <link rel="stylesheet" href="home.css">
+
+  <script src="../js/alpinev2.8.2.min.js" defer></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/storage.js"></script>
+  <script src="../js/date-fmt.js"></script>
+  <script src="../js/navigation.js"></script>
+</head>
+
+<body>
+  <div class="page" x-data="pageData()" x-init="onInit()">
+    <div class="header">
+      <!-- Purposely empty elements to add alignment and later add components. -->
+      <div></div>
+      <nav class="header-navbar">
+        <a class="navbar-btn" :class="{ 'active': tab === 'main' }" @click.prevent="tab = 'main'" href="#">
+          Principal
+        </a>
+        <a class="navbar-btn" :class="{ 'active': tab === 'projects' }" @click.prevent="tab = 'projects'" href="#">
+          Meus projetos
+        </a>
+        <a class="navbar-btn" :class="{ 'active': tab === 'calendar' }" @click.prevent="tab = 'calendar'" href="#">
+          Calendário
+        </a>
+      </nav>
+      <div>
+        <a class="exit-btn" href="#" @click.prevent="onExitClick()">
+          Sair
+        </a>
+      </div>
+    </div>
+
+    <div class="content-mark content" x-show="tab === 'main'">
+      <div class="content-container">
+        <div class="content-header">
+          <h2>Olá, Daniel</h2>
+          <button class="btn-opacity"><span>+</span>Novo projeto</button>
+        </div>
+        <div class="main-projects">
+          <div class="project">
+            <div class="project-container">
+              <div class="project-icon"></div>
+              <div class="project-name">Cliente</div>
+              <div class="project-measures"><span x-text="projectsMap.client.length"></span> projetos</div>
+            </div>
+          </div>
+          <div class="project">
+            <div class="project-container">
+              <div class="project-icon"></div>
+              <div class="project-name">Desenvolvedor</div>
+              <div class="project-measures"><span x-text="projectsMap.dev.length"></span> projetos</div>
+            </div>
+          </div>
+          <div class="project">
+            <div class="project-container">
+              <div class="project-icon"></div>
+              <div class="project-name">Gerente</div>
+              <div class="project-measures"><span x-text="projectsMap.manager.length"></span> projetos</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content-mark content" x-show="tab === 'projects'">
+      <div class="content-container">
+        <div class="content-header">
+          <h2>Lista de projetos</h2>
+          <button class="btn-opacity"><span>+</span>Novo projeto</button>
+        </div>
+        <div class="project-list">
+          <template x-for="project in projects" :key="project.id">
+            <div class="project">
+              <div class="project-container">
+                <div class="project-name">
+                  <span x-text="project.title"></span>
+                  <div x-show="project.sprint" class="project-sprint badges" x-text="project.sprint"></div>
+                  <div class="project-role badges" :class="project.role" x-text="project.roleText"></div>
+                </div>
+                <div x-show="project.finalDate" class="project-end-at">
+                  <span>Data do fim da sprint:</span>
+                  <div x-text="project.finalDate"></div>
+                </div>
+                <div x-show="!project.finalDate" class="project-end-at">
+                  <span>Sem sprints</span>
+                </div>
+              </div>
+              <div class="see-project">
+                <button class="btn-opacity" x-on:click="window.location = project.url">Ver Projeto</button>
+              </div>
+            </div>
+          </template>
+        </div>
+      </div>
+    </div>
+
+    <div class="content-mark" x-show="tab === 'calendar'">
+
+    </div>
+  </div>
+
+  <script>
+    function pageData() {
+      const ROLES_MAP = {
+        manager: "Gerente",
+        dev: "Desenvolvedor",
+        client: "Cliente"
+      };
+      return {
+        tab: 'main',
+        projectsMap: {
+          manager: [],
+          client: [],
+          dev: []
+        },
+        projects: [],
+        async onInit() {
+          const token = storage.token.get();
+          if (!token) {
+            navigation.goToError();
+          } else {
+            api.setToken(token);
+            const response = await api.projects();
+            const projects = response.result;
+
+            this.projects = projects.map(p => {
+              this.projectsMap[p.role].push(p.id);
+
+              return {
+                id: p.id,
+                title: p.name,
+                sprint: p.sprint_count ? p.sprint_count + " sprint" : null,
+                finalDate: dateFmt.fullDate(p.sprint_final_date),
+                url: "project.html?id=" + p.id,
+                role: p.role,
+                roleText: ROLES_MAP[p.role]
+              };
+            });
+          }
+        },
+        onExitClick() {
+          storage.clearAll();
+          document.body.style.pointerEvents = "none";
+          navigation.goToLogin();
+        }
+      }
+    }
+  </script>
+</body>
+
+</html>

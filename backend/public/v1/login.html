@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+
+  <!-- favicon -->
+  <link rel="apple-touch-icon" sizes="180x180" href="../others/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="../others/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../others/favicon-16x16.png">
+  <link rel="manifest" href="../others/site.webmanifest">
+  <link rel="mask-icon" href="../others/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/fonts.css">
+  <link rel="stylesheet" href="login.css">
+
+  <script src="../js/api.js"></script>
+  <script src="../js/storage.js"></script>
+  <script src="../js/navigation.js"></script>
+  <script src="../js/alpinev2.8.2.min.js" defer></script>
+</head>
+
+<body style="opacity: 0; transition: opacity 1s ease-out;">
+  <div class="page" x-data="pageData()" x-init="onInit()">
+    <div class="error-message" x-show="error.length > 0">
+      <p x-text="error"></p>
+    </div>
+    <div class="login-container">
+      <h1>Login</h1>
+      <input type="text" x-model="userName" placeholder="Usuário">
+      <input type="password" x-model="password" placeholder="Senha">
+      <button class="login-btn" @click="submitLogin">
+        Entrar
+      </button>
+    </div>
+  </div>
+
+  <script>
+    function pageData() {
+      return {
+        error: "",
+        userName: "",
+        password: "",
+        onInit() {
+          const token = storage.token.get();
+          if (token) {
+            navigation.goToHome();
+          } else {
+            document.body.style.opacity = "1";
+          }
+
+          let id = null;
+          this.$watch("error", value => {
+            if (value.length > 0) {
+              if (id) clearTimeout(id);
+              id = setTimeout(() => {
+                this.error = "";
+              }, 5000);
+            }
+          });
+        },
+        async submitLogin() {
+          try {
+            const { userName, password } = this;
+
+            if (userName.length === 0) {
+              this.error = "Nome de usuário não pode ser vazio!"
+              return;
+            }
+
+            if (password.length === 0) {
+              this.error = "A senha não pode ser vazia!"
+              return;
+            }
+
+            const data = await api.login({ userName, password });
+            if (data.error) {
+              if (data.error === "Person not found") {
+                this.error = "Usuário não encontrado!"
+              } else if (data.error === "User or password invalid") {
+                this.error = "Usuário ou senha inválidos!"
+              }
+
+              return;
+            }
+            storage.token.set(data.token);
+
+            document.body.style.opacity = "0";
+            document.body.style.pointerEvents = "none";
+
+            setTimeout(() => {
+              navigation.goToHome();
+            }, 1000);
+          } catch (err) {
+            console.log(err);
+          }
+        }
+      }
+    }
+  </script>
+</body>
+
+</html>
