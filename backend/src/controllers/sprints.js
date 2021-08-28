@@ -1,13 +1,10 @@
 const db = require("../database");
-
-function isNil(x) {
-  return x === null || x === undefined;
-}
+const isNil = require("../lib/isNil");
 
 module.exports = {
   async store(req, res) {
+    const projectId = Number(req.params.projectId);
     const { personId } = req.locals.token;
-    const { projectId } = req.params;
     const { taskIds } = req.body;
 
     const project = await db.getProjectById({ projectId, personId });

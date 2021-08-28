@@ -1,11 +1,12 @@
 const db = require("../database");
 const advanceTaskStage = require("../operations/advanceTaskStage");
 const goBackTaskStage = require("../operations/goBackTaskStage");
+const orDefault = require("../lib/orDefault");
 
 module.exports = {
   async index(req, res) {
     const { personId } = req.locals.token;
-    const { page = 0 } = req.query;
+    const page = Number(orDefault(req.query.page, 0));
     const projectId = Number(req.params.projectId);
     const project = await db.getProjectById({ projectId, personId });
 
@@ -24,8 +25,7 @@ module.exports = {
 
     if (!task) {
       res.status(404).json({ error: "Task not found" });
-    }
-    else {
+    } else {
       const stage = task.name;
       const nextStage = advanceTaskStage(stage);
       if (nextStage === null) {
@@ -43,8 +43,7 @@ module.exports = {
 
     if (!task) {
       res.status(404).json({ error: "Task not found" });
-    }
-    else {
+    } else {
       const stage = task.name;
       const nextStage = goBackTaskStage(stage);
       if (nextStage === null) {

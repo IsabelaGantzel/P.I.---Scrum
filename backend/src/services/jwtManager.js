@@ -1,6 +1,7 @@
 var jwt = require("jsonwebtoken");
+const config = require("../config");
 
-const JWT_SECRET = "123mudar";
+const JWT_SECRET = config.JWT_SECRET;
 const JWT_EXPIRES_IN = 24 * 60 * 60; // 1 day
 
 function generateToken(data) {

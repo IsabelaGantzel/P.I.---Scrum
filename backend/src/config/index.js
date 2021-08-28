@@ -9,6 +9,7 @@ dotenv.config({
 const config = {
   PORT: requireEnvNotNull("PORT"),
   ADMIN_PASSWORD: requireEnvNotNull("ADMIN_PASSWORD"),
+  JWT_SECRET: requireEnvNotNull("JWT_SECRET"),
 };
 
 module.exports = config;

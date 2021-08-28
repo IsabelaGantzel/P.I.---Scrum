@@ -74,6 +74,12 @@ describe("Api", () => {
   });
 
   describe("Authorized routes", () => {
+    class NamedError extends Error {
+      constructor(name) {
+        super();
+        this.name = name;
+      }
+    }
     test("Must fail if not authenticated", async () => {
       const res = await request(app)
         .get("/api/projects")
@@ -82,12 +88,6 @@ describe("Api", () => {
       expectError(res, 401, "Missing authorization token");
     });
     test("Must fail if token was expired", async () => {
-      class NamedError extends Error {
-        constructor(name) {
-          super();
-          this.name = name;
-        }
-      }
       jest
         .spyOn(jwtManager, "readToken")
         .mockRejectedValueOnce(new NamedError("TokenExpiredError"));
@@ -97,7 +97,19 @@ describe("Api", () => {
         .set("authorization", "Bearer fake-token")
         .expect("content-type", /json/);
 
-      expectError(res, 401, "Authorization token expired");
+      expectError(res, 401, "Expired authorization token");
+    });
+    test("Must fail if token was expired", async () => {
+      jest
+        .spyOn(jwtManager, "readToken")
+        .mockRejectedValueOnce(new NamedError("JsonWebTokenError"));
+
+      const res = await request(app)
+        .get("/api/projects")
+        .set("authorization", "Bearer fake-token")
+        .expect("content-type", /json/);
+
+      expectError(res, 401, "Invalid authorization token");
     });
     test("Must fail if something bad happens", async () => {
       jest.spyOn(jwtManager, "readToken").mockRejectedValueOnce(new Error());

@@ -1,4 +1,5 @@
 const db = require("../database");
+const orDefault = require("../lib/orDefault");
 
 module.exports = {
   async store(req, res) {
@@ -25,7 +26,7 @@ module.exports = {
   },
   async index(req, res) {
     const { personId } = req.locals.token;
-    const { page = 0 } = req.params;
+    const page = Number(orDefault(req.query.page, 0));
     const projects = await db.getProjects({ personId, page });
     res.json({ result: projects });
   },
