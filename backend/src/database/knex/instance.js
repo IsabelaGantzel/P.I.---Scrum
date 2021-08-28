@@ -208,5 +208,28 @@ module.exports = (query) => {
       }
       return firstStageId;
     },
+    async getTaskById({ taskId }) {
+      const [task] = await query
+        .select("t.*", "sg.name")
+        .from({ t: "tasks" })
+        .where("t.id", taskId)
+        .join({ st: "sprint_tasks" }, "t.id", "=", "st.task_id")
+        .join({ sg: "stages" }, "sg.id", "=", "st.stage_id")
+      return task;
+    },
+    async getStageByName({ stageName }) {
+      const [stage] = await query
+        .select()
+        .from("stages")
+        .where("name", stageName)
+        .limit(1)
+      return stage;
+    },
+    async updateTaskStage({ taskId, stageId }) {
+      const updateRolls = await query("sprint_tasks")
+        .update({ stage_id: stageId })
+        .where("task_id", taskId)
+      return updateRolls;
+    },
   };
 };

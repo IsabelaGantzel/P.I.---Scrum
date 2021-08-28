@@ -1,4 +1,4 @@
-const STAGES = ["STARTED", "DOING", "TESTING", "REVIEWING", "COMPLETE"];
+const STAGES = ["Started", "Doing", "Testing", "Reviewing", "Complete"];
 
 module.exports = {
   STAGES,

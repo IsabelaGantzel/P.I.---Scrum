@@ -1,4 +1,5 @@
 const db = require("../database");
+const advanceTaskStage = require("../operations/advanceTaskStage");
 
 module.exports = {
   async index(req, res) {
@@ -14,6 +15,25 @@ module.exports = {
       res.json(tasks);
     } else {
       res.status(401).json({ error: "Unauthorized access to project" });
+    }
+  },
+  async nextStage(req, res) {
+    const taskId = Number(req.params.taskId);
+    const task = await db.getTaskById({ taskId });
+
+    if (!task) {
+      res.status(404).json({ error: "Task not found" });
+    }
+    else {
+      const stage = task.name;
+      const nextStage = advanceTaskStage(stage);
+      if (nextStage === null) {
+        res.status(400).json({ error: "Invalid stage" });
+      } else {
+        const stage2 = await db.getStageByName({ stageName: nextStage });
+        await db.updateTaskStage({ taskId, stageId: stage2.id });
+        res.json({ message: "Task stage update" });
+      }
     }
   },
 };

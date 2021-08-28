@@ -68,5 +68,6 @@ app.post(
   ),
   sprints.store
 );
+app.get("/api/tasks/:taskId/next-stage", tasks.nextStage);
 
 module.exports = app;
