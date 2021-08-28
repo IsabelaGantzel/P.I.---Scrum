@@ -33,19 +33,14 @@ async function makeProject({ name, devs, manager, client }) {
 
   const managerId = await db.getManager(manager);
   const clientId = await db.getClient(client);
-  const [projectId] = await db.insertProject({
+  const projectId = await db.insertProject({
     name,
     start_date: Date.now(),
     final_date: null,
     manager_id: managerId,
     client_id: clientId,
   });
-  await db.insertDevs(
-    devs.map((id) => ({
-      project_id: projectId,
-      person_id: id,
-    }))
-  );
+  await db.insertDevs({ projectId, devIds: devs });
   return projectId;
 }
 
