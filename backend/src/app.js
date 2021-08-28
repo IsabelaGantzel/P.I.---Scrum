@@ -69,5 +69,6 @@ app.post(
   sprints.store
 );
 app.get("/api/tasks/:taskId/next-stage", tasks.nextStage);
+app.get("/api/tasks/:taskId/prev-stage", tasks.prevStage);
 
 module.exports = app;
