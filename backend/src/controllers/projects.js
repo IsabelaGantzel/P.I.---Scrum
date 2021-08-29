@@ -1,28 +1,40 @@
 const db = require("../database");
+const isNil = require("../lib/isNil");
 const orDefault = require("../lib/orDefault");
 
 module.exports = {
   async store(req, res) {
     const { devIds } = req.body;
+
     const clientId = await db.getClient(Number(req.body.clientId));
-    const managerId = await db.getManager(Number(req.body.managerId));
-    const projectData = {
-      name: req.body.projectName,
-      start_date: new Date(),
-      final_date: null,
-      manager_id: managerId,
-      client_id: clientId,
-    };
 
-    const projectId = await db.insertProject(projectData);
+    if (isNil(clientId)) {
+      res.status(400).json({ error: "Invalid client" });
+    } else {
+      const managerId = await db.getManager(Number(req.body.managerId));
 
-    const devs = await db.insertDevs({ projectId, devIds });
+      if (isNil(managerId)) {
+        res.status(400).json({ error: "Invalid manager" });
+      } else {
+        const projectData = {
+          name: req.body.projectName,
+          start_date: new Date(),
+          final_date: null,
+          manager_id: managerId,
+          client_id: clientId,
+        };
 
-    res.json({
-      id: projectId,
-      ...projectData,
-      devs,
-    });
+        const projectId = await db.insertProject(projectData);
+
+        const devs = await db.insertDevs({ projectId, devIds });
+
+        res.json({
+          id: projectId,
+          ...projectData,
+          devs,
+        });
+      }
+    }
   },
   async index(req, res) {
     const { personId } = req.locals.token;

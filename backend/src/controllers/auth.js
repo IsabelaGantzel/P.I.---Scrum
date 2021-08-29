@@ -1,19 +1,20 @@
 const jwtManager = require("../services/jwtManager");
 const passwordManager = require("../services/passwordManager");
 const db = require("../database");
+const isNil = require("../lib/isNil");
 
 module.exports = {
   async login(req, res) {
     const person = await db.getPersonByName(req.body.userName);
-    if (!person) {
+    if (isNil(person)) {
       res.status(404).json({ error: "Person not found" });
     } else {
-      const passwordCorrect = await passwordManager.checkPassword(
+      const isPasswordCorrect = await passwordManager.checkPassword(
         req.body.password,
         person.password
       );
 
-      if (!passwordCorrect) {
+      if (!isPasswordCorrect) {
         res.status(400).json({ error: "User or password invalid" });
       } else {
         const token = jwtManager.generateToken({ personId: person.id });

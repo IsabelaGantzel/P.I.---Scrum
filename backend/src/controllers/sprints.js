@@ -11,7 +11,9 @@ module.exports = {
 
     if (!project) {
       res.status(404).json({ error: "Project not found" });
-    } else if (project.person_id === personId) {
+    } else if (project.person_id !== personId) {
+      res.status(401).json({ error: "Unauthorized access to project" });
+    } else {
       const tasks = await db.getFreeTasks({ projectId, taskIds });
 
       if (
@@ -27,8 +29,6 @@ module.exports = {
         await db.insertTasksToSprint({ taskIds, sprintId: sprintId });
         res.json({ message: "Tasks was linked with sprints successfully" });
       }
-    } else {
-      res.status(401).json({ error: "Unauthorized access to project" });
     }
   },
 };
