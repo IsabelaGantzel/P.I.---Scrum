@@ -4,8 +4,6 @@ const JestDateMock = require("jest-date-mock");
 const { STAGES } = require("../../src/operations/constants");
 const goBackTaskStage = require("../../src/operations/goBackTaskStage");
 const advanceTaskStage = require("../../src/operations/advanceTaskStage");
-const storeProject = require("../../src/operations/storeProject");
-const validateStoreProject = require("../../src/operations/validateStoreProject");
 const passwordManager = require("../../src/services/passwordManager");
 const jwtManager = require("../../src/services/jwtManager");
 
@@ -32,83 +30,6 @@ describe("Update task stage", () => {
     for (let i = 1; i < STAGES.length; i++) {
       expect(typeof goBackTaskStage(STAGES[i])).toBe("string");
     }
-  });
-});
-
-describe("Store project", () => {
-  const projectData = {
-    projectName: "Test",
-    clientPersonId: 0,
-    managerPersonId: 1,
-    startDate: Date.now(),
-    devIds: [2],
-  };
-
-  test("Must store a project if all fields are passed", async () => {
-    const data = {
-      ...projectData,
-      getClientByPersonId(x) {
-        return x;
-      },
-      getManagerByPersonId(x) {
-        return x;
-      },
-      storeDevsInDatabase(devs) {},
-      storeProjectInDatabase(project) {
-        return 1;
-      },
-    };
-    const result = await storeProject(data);
-
-    expect(result).toMatchObject({
-      id: 1,
-      start_date: data.startDate,
-      final_date: null,
-      name: data.projectName,
-      client_id: data.clientPersonId,
-      manager_id: data.managerPersonId,
-      devs: [{ project_id: 1, person_id: 2 }],
-    });
-  });
-
-  describe("Validate project data", () => {
-    async function doTest(attrs) {
-      return validateStoreProject({
-        ...projectData,
-        existsPersonById() {
-          return true;
-        },
-        ...attrs,
-      });
-    }
-
-    test("must returns { value } if the data is valid and ids exists", async () => {
-      const result = await doTest({});
-      expect(result.value).toMatchObject(projectData);
-    });
-    test("must returns { name, error, message } if has type errors", async () => {
-      const result = await doTest({
-        projectName: 123,
-        clientPersonId: "x",
-        managerPersonId: "y",
-      });
-      expect(result.name).toBeDefined();
-      expect(result.error).toBeDefined();
-    });
-
-    function testPersonIdExists(label, invalidId) {
-      test(`must returns { name, message } if some person id not exists (${label})`, async () => {
-        const result = await doTest({
-          existsPersonById: (personId) => personId !== invalidId,
-        });
-        expect(result.name).toBeDefined();
-        expect(result.error).toBeUndefined();
-      });
-    }
-
-    testPersonIdExists("manager", projectData.managerPersonId);
-    testPersonIdExists("client", projectData.clientPersonId);
-    testPersonIdExists("dev", projectData.devIds[0]);
   });
 });
 
