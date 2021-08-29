@@ -6,14 +6,10 @@ export default class Tasks extends BaseSchema {
   public async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id')
-      table.string("title").notNullable()
-      table.string("description").notNullable()
-      table.integer("points").notNullable()
-      table
-        .integer("project_id")
-        .notNullable()
-        .references("id")
-        .inTable("projects")
+      table.string('title').notNullable()
+      table.string('description').notNullable()
+      table.integer('points').notNullable()
+      table.integer('project_id').notNullable().references('id').inTable('projects')
     })
   }
 

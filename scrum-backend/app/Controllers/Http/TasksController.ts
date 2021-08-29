@@ -1,6 +1,6 @@
 // import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
-import { HttpContext } from "@adonisjs/core/build/standalone";
+import { HttpContext } from '@adonisjs/core/build/standalone'
 
 export default class TasksController {
   public async index({ params }: HttpContext) {

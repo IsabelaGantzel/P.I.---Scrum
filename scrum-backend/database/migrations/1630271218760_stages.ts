@@ -8,7 +8,7 @@ export default class Stages extends BaseSchema {
       table.increments('id')
       table.string('name').notNullable()
 
-      table.unique(["name"])
+      table.unique(['name'])
     })
   }
 

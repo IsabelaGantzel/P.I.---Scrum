@@ -5,11 +5,11 @@ import Env from '@ioc:Adonis/Core/Env'
 
 export default class AdminSeeder extends BaseSeeder {
   public async run() {
-    const password = await Hash.make(Env.get("ADMIN_PASSWORD"))
+    const password = await Hash.make(Env.get('ADMIN_PASSWORD'))
 
-    await Database.table("persons").insert({
-      user: "admin",
-      password
+    await Database.table('persons').insert({
+      user: 'admin',
+      password,
     })
   }
 }
