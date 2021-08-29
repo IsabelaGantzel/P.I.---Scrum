@@ -97,7 +97,7 @@ function instance(query) {
                 "DISTINCT s.id as sprint_id, p2.id as project_id, s.final_date"
               )
             )
-            .from({ p2: "projects " })
+            .from({ p2: "projects" })
             .join({ t: "tasks" }, "t.project_id", "=", "p2.id")
             .join({ st: "sprint_tasks" }, "st.task_id", "=", "t.id")
             .join({ s: "sprints" }, "st.sprint_id", "=", "s.id")
