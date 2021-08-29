@@ -20,6 +20,11 @@
 
 import Route from '@ioc:Adonis/Core/Route'
 
-Route.get('/', async () => {
-  return { hello: 'world' }
-})
+Route.get("projects/:projectId", "ProjectsController.show");
+Route.get("projects", "ProjectsController.index");
+Route.post("projects", "ProjectsController.store");
+
+Route.post("projects/:projectId/sprint-tasks", "SprintsController.store");
+
+Route.get("tasks/:taskId/next-stage", "TasksController.nextStage");
+Route.get("tasks/:taskId/prev-stage", "TasksController.prevStage");
