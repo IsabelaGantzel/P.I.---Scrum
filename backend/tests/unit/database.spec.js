@@ -85,6 +85,7 @@ describe("Knex Database", () => {
     projectId2: 0,
     taskId2: 0,
     sprintId: 0,
+    stageId: 0,
   };
   beforeAll(async () => {
     const [clientPersonId] = await db.query("persons").insert({
@@ -382,5 +383,24 @@ describe("Knex Database", () => {
     expect(Array.isArray(tasks)).toBe(true);
     expect(tasks).toHaveLength(1);
     expect(tasks[0]).toHaveProperty("id", data.taskId1);
+  });
+
+  test("db.getTaskById() must return a task", async () => {
+    const task = await db.getTaskById({ taskId: data.taskId1 });
+    expect(task).not.toBeNull();
+  });
+  test("db.updateTaskStage() must return a task", async () => {
+    const updatedRows = await db.updateTaskStage({
+      taskId: data.taskId2,
+      stageId: data.stageId,
+    });
+    expect(updatedRows).toBe(1);
+  });
+  test("db.updateTaskStage() must return a task", async () => {
+    const updatedRows = await db.updateTaskStage({
+      taskId: data.taskId1,
+      stageId: data.stageId,
+    });
+    expect(updatedRows).toBe(0);
   });
 });

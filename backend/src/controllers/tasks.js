@@ -26,13 +26,12 @@ module.exports = {
     if (!task) {
       res.status(404).json({ error: "Task not found" });
     } else {
-      const stage = task.name;
-      const nextStage = advanceTaskStage(stage);
+      const nextStage = advanceTaskStage(task.stage);
       if (nextStage === null) {
         res.status(400).json({ error: "Invalid stage" });
       } else {
-        const stage2 = await db.getStageByName({ stageName: nextStage });
-        await db.updateTaskStage({ taskId, stageId: stage2.id });
+        const stage = await db.getStageByName({ stageName: nextStage });
+        await db.updateTaskStage({ taskId, stageId: stage.id });
         res.json({ message: "Task stage update" });
       }
     }
@@ -44,13 +43,12 @@ module.exports = {
     if (!task) {
       res.status(404).json({ error: "Task not found" });
     } else {
-      const stage = task.name;
-      const nextStage = goBackTaskStage(stage);
+      const nextStage = goBackTaskStage(task.stage);
       if (nextStage === null) {
         res.status(400).json({ error: "Invalid stage" });
       } else {
-        const stage2 = await db.getStageByName({ stageName: nextStage });
-        await db.updateTaskStage({ taskId, stageId: stage2.id });
+        const stage = await db.getStageByName({ stageName: nextStage });
+        await db.updateTaskStage({ taskId, stageId: stage.id });
         res.json({ message: "Task stage update" });
       }
     }

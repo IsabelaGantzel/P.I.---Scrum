@@ -5,6 +5,7 @@ const request = require("supertest");
 const db = require("../../src/database");
 const passwordManager = require("../../src/services/passwordManager");
 const jwtManager = require("../../src/services/jwtManager");
+const { STAGES } = require("../../src/operations/constants");
 
 function expectError(res, statusCode, message) {
   expect(res.statusCode).toBe(statusCode);
@@ -229,13 +230,14 @@ describe("Api", () => {
     });
   });
   describe("POST /api/projects", () => {
-    test("Must return the project infos", async () => {
-      jest.spyOn(jwtManager, "readToken").mockReturnValueOnce({ personId: 1 });
-      jest.spyOn(db, "getClient").mockResolvedValueOnce(0);
-      jest.spyOn(db, "getManager").mockResolvedValueOnce(0);
-      jest.spyOn(db, "insertDevs").mockResolvedValueOnce([0]);
-      jest.spyOn(db, "insertProject").mockResolvedValueOnce(0);
-      const res = await request(app)
+    beforeEach(() => {
+      jest.spyOn(jwtManager, "readToken").mockReturnValue({ personId: 1 });
+      jest.spyOn(db, "insertDevs").mockResolvedValue([0]);
+      jest.spyOn(db, "insertProject").mockResolvedValue(0);
+    });
+
+    function doRequest() {
+      return request(app)
         .post("/api/projects")
         .send({
           projectName: "project test",
@@ -245,6 +247,12 @@ describe("Api", () => {
         })
         .set("authorization", "Bearer fake-token")
         .expect("content-type", /json/);
+    }
+
+    test("Must return the project infos", async () => {
+      jest.spyOn(db, "getClient").mockResolvedValueOnce(0);
+      jest.spyOn(db, "getManager").mockResolvedValueOnce(0);
+      const res = await doRequest();
 
       expect(res.body).toHaveProperty("id", 0);
       expect(res.body).toHaveProperty("name", "project test");
@@ -254,7 +262,19 @@ describe("Api", () => {
       expect(res.body).toHaveProperty("client_id", 0);
       expect(res.body).toHaveProperty("devs", [0]);
     });
+    test("Must fail if the client was invalid", async () => {
+      jest.spyOn(db, "getClient").mockResolvedValueOnce(null);
+      const res = await doRequest();
+      expectError(res, 400, "Invalid client");
+    });
+    test("Must fail if the manager was invalid", async () => {
+      jest.spyOn(db, "getClient").mockResolvedValueOnce(0);
+      jest.spyOn(db, "getManager").mockResolvedValueOnce(null);
+      const res = await doRequest();
+      expectError(res, 400, "Invalid manager");
+    });
   });
+
   describe("POST /api/projects/{projectId}/sprint-tasks", () => {
     const personId = 1;
     beforeAll(() => {
@@ -315,6 +335,66 @@ describe("Api", () => {
 
       const res = await doRequest();
       expectError(res, 401, "Unauthorized access to project");
+    });
+  });
+
+  describe("GET /api/tasks/{taskId}/next-stage", () => {
+    test("must update the task stage", async () => {
+      jest.spyOn(db, "getTaskById").mockResolvedValueOnce({ stage: STAGES[0] });
+      jest.spyOn(db, "getStageByName").mockResolvedValueOnce({ id: 1 });
+      jest.spyOn(db, "updateTaskStage").mockResolvedValueOnce(null);
+      const res = await request(app)
+        .get("/api/tasks/1/next-stage")
+        .set("authorization", "Bearer fake-token")
+        .expect("content-type", /json/);
+      expect(res.statusCode).toBe(200);
+      expect(res.body.message).toBe("Task stage update");
+    });
+    test("return a error if not found", async () => {
+      jest.spyOn(db, "getTaskById").mockResolvedValueOnce(null);
+      const res = await request(app)
+        .get("/api/tasks/1/next-stage")
+        .set("authorization", "Bearer fake-token")
+        .expect("content-type", /json/);
+      expectError(res, 404, "Task not found");
+    });
+    test("return a error if the stage is invalid", async () => {
+      jest.spyOn(db, "getTaskById").mockResolvedValueOnce({});
+      const res = await request(app)
+        .get("/api/tasks/1/next-stage")
+        .set("authorization", "Bearer fake-token")
+        .expect("content-type", /json/);
+      expectError(res, 400, "Invalid stage");
+    });
+  });
+
+  describe("GET /api/tasks/{taskId}/prev-stage", () => {
+    test("must update the task stage", async () => {
+      jest.spyOn(db, "getTaskById").mockResolvedValueOnce({ stage: STAGES[2] });
+      jest.spyOn(db, "getStageByName").mockResolvedValueOnce({ id: 1 });
+      jest.spyOn(db, "updateTaskStage").mockResolvedValueOnce(null);
+      const res = await request(app)
+        .get("/api/tasks/1/prev-stage")
+        .set("authorization", "Bearer fake-token")
+        .expect("content-type", /json/);
+      expect(res.statusCode).toBe(200);
+      expect(res.body.message).toBe("Task stage update");
+    });
+    test("return a error if not found", async () => {
+      jest.spyOn(db, "getTaskById").mockResolvedValueOnce(null);
+      const res = await request(app)
+        .get("/api/tasks/1/prev-stage")
+        .set("authorization", "Bearer fake-token")
+        .expect("content-type", /json/);
+      expectError(res, 404, "Task not found");
+    });
+    test("return a error if the stage is invalid", async () => {
+      jest.spyOn(db, "getTaskById").mockResolvedValueOnce({});
+      const res = await request(app)
+        .get("/api/tasks/1/prev-stage")
+        .set("authorization", "Bearer fake-token")
+        .expect("content-type", /json/);
+      expectError(res, 400, "Invalid stage");
     });
   });
 });

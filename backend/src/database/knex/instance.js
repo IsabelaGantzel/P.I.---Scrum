@@ -206,22 +206,18 @@ function instance(query) {
     },
     async getFirstStage() {
       if (firstStageId === null) {
-        const [stage] = await query
-          .select()
-          .from("stages")
-          .where("name", "Started")
-          .limit(1);
+        const stage = await this.getStageByName({ stageName: "Started" });
         firstStageId = stage.id;
       }
       return firstStageId;
     },
     async getTaskById({ taskId }) {
       const [task] = await query
-        .select("t.*", "sg.name")
+        .select("t.*", "sg.name as stage")
         .from({ t: "tasks" })
         .where("t.id", taskId)
-        .join({ st: "sprint_tasks" }, "t.id", "=", "st.task_id")
-        .join({ sg: "stages" }, "sg.id", "=", "st.stage_id")
+        .leftJoin({ st: "sprint_tasks" }, "t.id", "=", "st.task_id")
+        .leftJoin({ sg: "stages" }, "sg.id", "=", "st.stage_id");
       return task;
     },
     async getStageByName({ stageName }) {
@@ -229,13 +225,13 @@ function instance(query) {
         .select()
         .from("stages")
         .where("name", stageName)
-        .limit(1)
+        .limit(1);
       return stage;
     },
     async updateTaskStage({ taskId, stageId }) {
       const updateRolls = await query("sprint_tasks")
         .update({ stage_id: stageId })
-        .where("task_id", taskId)
+        .where("task_id", taskId);
       return updateRolls;
     },
   };
