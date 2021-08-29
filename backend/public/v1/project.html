@@ -200,16 +200,18 @@
             newStage.tasks.splice(newIndex, 0, task.id);
           }
         },
-        prevStage(taskId) {
+        async prevStage(taskId) {
           if (taskId in this.tasks) {
             const task = this.tasks[taskId];
             this._updateStage(task, "prev");
+            await api.prevStage(taskId);
           }
         },
-        nextStage(taskId) {
+        async nextStage(taskId) {
           if (taskId in this.tasks) {
             const task = this.tasks[taskId];
             this._updateStage(task, "next");
+            await api.nextStage(taskId);
           }
         },
         _updateTasksSelectedInfo() {

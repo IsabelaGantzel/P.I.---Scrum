@@ -63,5 +63,13 @@ const api = (() => {
       if (!token) throw new Error("Token missing");
       return await get(`/api/projects/${projectId}/tasks`);
     },
+    async nextStage(taskId) {
+      if (!token) throw new Error("Token missing");
+      return await get(`/api/tasks/${taskId}/next-stage`);
+    },
+    async prevStage(taskId) {
+      if (!token) throw new Error("Token missing");
+      return await get(`/api/tasks/${taskId}/prev-stage`);
+    },
   };
 })();
