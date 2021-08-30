@@ -5,6 +5,8 @@ module.exports = {
     return knex.schema.createTable(TABLE_NAME, (table) => {
       table.increments("id").primary();
       table.string("name").notNullable();
+
+      table.unique("name");
     });
   },
   async down(knex) {

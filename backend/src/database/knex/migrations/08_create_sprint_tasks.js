@@ -16,7 +16,7 @@ module.exports = {
         .inTable("stages");
 
       // A task must be defined on a sprint only 1 time
-      table.unique("task_id");
+      table.primary("task_id");
     });
   },
   async down(knex) {
